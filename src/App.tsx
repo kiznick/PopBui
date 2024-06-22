@@ -63,11 +63,11 @@ function App() {
 				/>
 			</motion.div> */}
 			<div
-				className="py-10 px-5 text-center flex items-center"
+				className="py-10 px-5 text-center flex items-center select-none"
 				onPointerDown={handleMouseDown}
 				onPointerUp={handleMouseUp}
 			>
-				<div className="mx-auto">
+				<div className="mx-auto pointer-events-none">
 					<p
 						className="text-8xl"
 					>
@@ -90,7 +90,7 @@ function App() {
 						Pop: <span className="font-bold">{count}</span>
 					</p>
 					<Button
-						className='mt-5'
+						className='mt-5 pointer-events-auto'
 						onClick={() => {
 							setCount(0)
 							setTimeLeft(time)
