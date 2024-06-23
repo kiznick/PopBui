@@ -33,7 +33,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                 </div>
                 <App />
                 <div
-                    className="p-5 text-center w-full"
+                    className="p-5 text-center w-full mb-14"
                 >
                     <p>Join us for election</p>
                     <p>Date: 3-4 July 2024 Time: 10:00-16:00</p>

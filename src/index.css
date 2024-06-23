@@ -17,3 +17,7 @@
     background-color: #D2E1AC;
     font-family: 'Lazydog', sans-serif, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
+
+.g-recaptcha {
+    visibility: hidden;
+}

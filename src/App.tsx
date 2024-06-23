@@ -8,6 +8,10 @@ import { motion } from 'framer-motion'
 import { Howl } from 'howler'
 import { GoogleReCaptchaProvider, useGoogleReCaptcha } from 'react-google-recaptcha-v3'
 
+type LeaderboardType = {
+	username: string
+	popCount: number
+}
 
 function App() {
 	const time = 3
@@ -33,9 +37,14 @@ function App() {
 	const [username, setUsername] = useState('')
 	const [inputUsernameError, setInputUsernameError] = useState('')
 	const [inputUsername, setInputUsername] = useState('')
+	const [totalLeaderboard, setTotalLeaderboard] = useState<LeaderboardType[]>([])
+	const [highestLeaderboard, setHighestLeaderboard] = useState<LeaderboardType[]>([])
 
 	const sendData = useCallback(async () => {
 		if (!executeRecaptcha) return
+
+		if (count === 0) return
+		if (count > maxClick) return alert('You clicked too much.')
 
 		const token = await executeRecaptcha('submit')
 		const response = await axios.post(`${apiServer}submit`, {
@@ -47,7 +56,7 @@ function App() {
 		if (response.data.error) {
 			alert(response.data.message)
 		}
-	})
+	}, [count, executeRecaptcha, maxClick, username])
 
 	useEffect(() => {
 		let intervalId = undefined
@@ -69,6 +78,26 @@ function App() {
 		}
 	}, [isRunning, sendData, timeLeft])
 
+	useEffect(() => {
+		const updateLeaderboard = async () => {
+			const response = await axios.get(`${apiServer}leaderboard`)
+
+			if (response.data.error) {
+				return alert(response.data.message)
+			}
+
+			const leaderboard = response.data
+
+			setTotalLeaderboard(leaderboard.totalRanking)
+			setHighestLeaderboard(leaderboard.highestRanking)
+		}
+
+		updateLeaderboard()
+		setInterval(() => {
+			updateLeaderboard()
+		}, 1000 * 2)
+	}, [])
+
 	const handleMouseDown = () => {
 		setIsOpenLeaderboard(false)
 
@@ -89,7 +118,7 @@ function App() {
 			reCaptchaKey={RECAPTCHA_SITE_KEY}
 		>
 			<div
-				className='container mx-auto h-screen flex flex-col justify-between'
+				className='container mx-auto flex flex-col justify-between'
 			>
 				<div
 					className="py-10 px-5 text-center flex items-center select-none"
@@ -210,7 +239,7 @@ function App() {
 				</div>
 				{/* -translate-y-full sm:translate-y-0 */}
 				<motion.div
-					className={`fixed bottom-0 z-40 w-screen max-w-3xl`}
+					className={`fixed bottom-0 z-40 w-screen flex items-center justify-center`}
 					style={{
 						margin: '0 auto',
 						height: '3.5rem',
@@ -220,7 +249,7 @@ function App() {
 					}}
 				>
 					<div
-						className="w-full h-full px-3 py-4 overflow-y-none bg-gray-50 rounded-t-large pointer-events-auto"
+						className="w-full h-full px-3 py-4 overflow-y-none bg-gray-50 rounded-t-large pointer-events-auto max-w-3xl"
 						onClick={() => {
 							setIsOpenLeaderboard((prev) => !prev)
 						}}
@@ -234,45 +263,51 @@ function App() {
 								// visibility: isOpenLeaderboard ? 'visible' : 'hidden',
 							}}
 						>
-							<p>Join us for election</p>
-							<p>Date: 3-4 July 2024 Time: 10:00-16:00</p>
-							<p>Location: Lobby, G Floor, Aditayathorn Building</p>
-							<p>Join us for election</p>
-							<p>Date: 3-4 July 2024 Time: 10:00-16:00</p>
-							<p>Location: Lobby, G Floor, Aditayathorn Building</p>
-							<p>Join us for election</p>
-							<p>Date: 3-4 July 2024 Time: 10:00-16:00</p>
-							<p>Location: Lobby, G Floor, Aditayathorn Building</p>
-							<p>Join us for election</p>
-							<p>Date: 3-4 July 2024 Time: 10:00-16:00</p>
-							<p>Location: Lobby, G Floor, Aditayathorn Building</p>
-							<p>Join us for election</p>
-							<p>Date: 3-4 July 2024 Time: 10:00-16:00</p>
-							<p>Location: Lobby, G Floor, Aditayathorn Building</p>
-							<p>Join us for election</p>
-							<p>Date: 3-4 July 2024 Time: 10:00-16:00</p>
-							<p>Location: Lobby, G Floor, Aditayathorn Building</p>
-							<p>Join us for election</p>
-							<p>Date: 3-4 July 2024 Time: 10:00-16:00</p>
-							<p>Location: Lobby, G Floor, Aditayathorn Building</p>
-							<p>Join us for election</p>
-							<p>Date: 3-4 July 2024 Time: 10:00-16:00</p>
-							<p>Location: Lobby, G Floor, Aditayathorn Building</p>
-							<p>Join us for election</p>
-							<p>Date: 3-4 July 2024 Time: 10:00-16:00</p>
-							<p>Location: Lobby, G Floor, Aditayathorn Building</p>
-							<p>Join us for election</p>
-							<p>Date: 3-4 July 2024 Time: 10:00-16:00</p>
-							<p>Location: Lobby, G Floor, Aditayathorn Building</p>
-							<p>Join us for election</p>
-							<p>Date: 3-4 July 2024 Time: 10:00-16:00</p>
-							<p>Location: Lobby, G Floor, Aditayathorn Building</p>
-							<p>Join us for election</p>
-							<p>Date: 3-4 July 2024 Time: 10:00-16:00</p>
-							<p>Location: Lobby, G Floor, Aditayathorn Building</p>
-							<p>Join us for election</p>
-							<p>Date: 3-4 July 2024 Time: 10:00-16:00</p>
-							<p>Location: Lobby, G Floor, Aditayathorn Building</p>
+							<div
+								className="flex flex-col gap-2"
+							>
+								<div
+									className="flex flex-col gap-1"
+								>
+									<p
+										className="text-xl"
+									>
+										Total Ranking
+									</p>
+									{
+										totalLeaderboard ? totalLeaderboard.map((item, index) => (
+											<p
+												key={index}
+												className="flex justify-between"
+											>
+												<span>{item.username}</span>
+												<span>{item.popCount}</span>
+											</p>
+										)) : 'Loading...'
+									}
+								</div>
+								<div
+									className="flex flex-col gap-1"
+								>
+									<p
+										className="text-xl"
+									>
+										Highest Ranking
+									</p>
+									{
+										highestLeaderboard ?
+										highestLeaderboard.map((item, index) => (
+											<p
+												key={index}
+												className="flex justify-between"
+											>
+												<span>{item.username}</span>
+												<span>{item.popCount}</span>
+											</p>
+										)) : 'Loading...'
+									}
+								</div>
+							</div>
 						</ScrollShadow>
 					</div>
 				</motion.div>
