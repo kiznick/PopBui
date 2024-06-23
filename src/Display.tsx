@@ -49,9 +49,15 @@ function Display() {
     }, [])
 
     useEffect(() => {
-        setInterval(() => {
+        const randomIsBui = async () => {
             setIsBui(Math.random() < 0.5)
-        }, 500)
+
+            setTimeout(() => {
+                randomIsBui()
+            }, 1000 * Math.random())
+        }
+
+        randomIsBui()
     }, [])
 
     return (
