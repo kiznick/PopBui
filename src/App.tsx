@@ -105,6 +105,16 @@ function App() {
 		}, 1000 * 2)
 	}, [])
 
+	useEffect(() => {
+		const localUsername = localStorage.getItem('k-username')?.toLowerCase()
+		
+		if(!localUsername) return
+		if(localUsername.length > 20) return
+		if(!/^[a-z0-9 ]*$/.test(localUsername)) return
+
+		setUsername(localUsername)
+	}, [])
+
 	const handleMouseDown = () => {
 		setIsOpenLeaderboard(false)
 
@@ -333,12 +343,12 @@ function App() {
 									errorMessage={inputUsernameError}
 									value={inputUsername}
 									onChange={(e) => {
-										const value = e.target.value
+										const value = e.target.value.toLowerCase()
 										setInputUsername(value)
 
 										if (!value) return setInputUsernameError('Please enter your name.')
 										if (value.length > 20) return setInputUsernameError('Name can be maximum 20 characters.')
-										if (!/^[a-zA-Z0-9 ]*$/.test(value)) return setInputUsernameError('Name can be alphabet and number only.')
+										if (!/^[a-z0-9 ]*$/.test(value)) return setInputUsernameError('Name can be alphabet and number only.')
 
 										setInputUsernameError('')
 									}}
@@ -356,6 +366,7 @@ function App() {
 									() => {
 										if (inputUsernameError) return
 
+										localStorage.setItem('k-username', inputUsername)
 										setUsername(inputUsername)
 										onClose()
 									}
