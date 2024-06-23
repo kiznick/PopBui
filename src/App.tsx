@@ -58,7 +58,7 @@ function App() {
 			}
 		}
 
-		if(!isRunning && count > 0) {
+		if (!isRunning && count > 0) {
 			sendData()
 			console.log('Send data.', isRunning, count)
 		} else {
@@ -107,10 +107,10 @@ function App() {
 
 	useEffect(() => {
 		const localUsername = localStorage.getItem('k-username')?.toLowerCase()
-		
-		if(!localUsername) return
-		if(localUsername.length > 20) return
-		if(!/^[a-z0-9 ]*$/.test(localUsername)) return
+
+		if (!localUsername) return
+		if (localUsername.length > 20) return
+		if (!/^[a-z0-9 ]*$/.test(localUsername)) return
 
 		setUsername(localUsername)
 	}, [])
@@ -327,7 +327,11 @@ function App() {
 					</div>
 				</motion.div>
 			</div>
-			<Modal isOpen={usernameModal.isOpen} onOpenChange={usernameModal.onOpenChange}>
+			<Modal
+				isOpen={usernameModal.isOpen}
+				onOpenChange={usernameModal.onOpenChange}
+				placement='center'
+			>
 				<ModalContent>
 					{(onClose) => (
 						<>
