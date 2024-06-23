@@ -79,10 +79,9 @@ function Display() {
                         </p>
 
                         <div className="flex gap-2">
-
                             <div className="w-full h-full overflow-y-none bg-gray-50 rounded-large max-w-3xl">
                                 <ScrollShadow
-                                    className="h-full mt-3 p-6"
+                                    className="h-full p-6"
                                 >
                                     <div
                                         className="flex flex-col gap-2"
@@ -112,7 +111,7 @@ function Display() {
                             </div>
                             <div className="w-full h-full overflow-y-none bg-gray-50 rounded-large max-w-3xl">
                                 <ScrollShadow
-                                    className="h-full mt-3 p-6"
+                                    className="h-full p-6"
                                 >
                                     <div
                                         className="flex flex-col gap-2"
