@@ -58,7 +58,7 @@ function App() {
 			}
 		}
 
-		if (!isRunning && count > 0) {
+		if (!isRunning && count > 0 && username) {
 			sendData()
 			console.log('Send data.', isRunning, count)
 		} else {
@@ -171,7 +171,7 @@ function App() {
 							{
 								username ? (
 									<>
-										Welcome, {username}
+										Welcome, {username || 'Guest'}
 										<div
 											className="h-8 w-8"
 											style={{
@@ -268,13 +268,13 @@ function App() {
 										<div className="flex flex-col flex-1 items-center py-0 px-4 text-black border-r border-solid cursor-pointer border-zinc-100">
 											<div className="flex flex-grow justify-between w-full text-xs text-black cursor-pointer">
 												<span className="flex flex-row items-center text-base text-black cursor-pointer">
-													🥇 {totalLeaderboard ? totalLeaderboard[0].username || 'Loading...' : 'Loading...'}
+													🥇 {totalLeaderboard ? totalLeaderboard[0]?.username || 'Loading...' : 'Loading...'}
 												</span>
 												<span className="flex flex-row items-center text-xs font-semibold text-black cursor-pointer">
-													🥈 {totalLeaderboard ? totalLeaderboard[1].username || 'Loading...' : 'Loading...'}
+													🥈 {totalLeaderboard ? totalLeaderboard[1]?.username || 'Loading...' : 'Loading...'}
 												</span>
 												<span className="flex flex-row items-center text-xs text-black cursor-pointer">
-													🥉 {totalLeaderboard ? totalLeaderboard[2].username || 'Loading...' : 'Loading...'}
+													🥉 {totalLeaderboard ? totalLeaderboard[2]?.username || 'Loading...' : 'Loading...'}
 												</span>
 											</div>
 										</div>
