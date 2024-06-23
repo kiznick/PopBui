@@ -140,7 +140,7 @@ function App() {
 					onPointerDown={handleMouseDown}
 					onPointerUp={handleMouseUp}
 				>
-					<div className="mx-auto pointer-events-none">
+					<div className="mx-auto">
 						<p
 							className="text-7xl lg:text-8xl"
 						>
@@ -160,14 +160,14 @@ function App() {
 							Pop: <span className="font-bold">{count}</span>
 						</p>
 						<p
-							className='text-xl flex items-center justify-center gap-2 mt-5 pointer-events-none'
+							className='text-xl flex items-center justify-center gap-2 mt-5'
 						>
 							{
 								username ? (
 									<>
 										Welcome, {username}
 										<div
-											className="h-8 w-8 pointer-events-auto"
+											className="h-8 w-8"
 											onClick={() => {
 												setUsername('')
 											}}
@@ -185,7 +185,7 @@ function App() {
 							}
 						</p>
 						<Button
-							className='mt-5 pointer-events-auto'
+							className='mt-5'
 							disabled={isLockButton}
 							onClick={() => {
 								if (isLockButton) return
@@ -264,7 +264,7 @@ function App() {
 					}}
 				>
 					<div
-						className="w-full h-full px-3 py-4 overflow-y-none bg-gray-50 rounded-t-large pointer-events-auto max-w-3xl"
+						className="w-full h-full px-3 py-4 overflow-y-none bg-gray-50 rounded-t-large max-w-3xl"
 						onClick={() => {
 							setIsOpenLeaderboard((prev) => !prev)
 						}}
