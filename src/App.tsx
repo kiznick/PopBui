@@ -14,7 +14,7 @@ type LeaderboardType = {
 }
 
 function App() {
-	const time = 3
+	const time = 5
 
 	const apiServer = 'https://popbui-api.kiznick.me/'
 
@@ -134,6 +134,12 @@ function App() {
 		<>
 			<div
 				className='container mx-auto flex flex-col justify-between'
+				style={{
+					backgroundImage: `url('${isClicked ? '/2.png' : '/1.png'}')`,
+					backgroundSize: 'contain',
+					backgroundRepeat: 'no-repeat',
+					backgroundPosition: 'center',
+				}}
 			>
 				<div
 					className="py-10 px-5 text-center flex items-center select-none"
@@ -168,6 +174,9 @@ function App() {
 										Welcome, {username}
 										<div
 											className="h-8 w-8"
+											style={{
+												visibility: isRunning ? 'hidden' : 'visible',
+											}}
 											onClick={() => {
 												setUsername('')
 											}}
@@ -216,34 +225,11 @@ function App() {
 							className="m-10"
 							animate={{ scale: isClicked ? 1.2 : 1 }}
 						>
-							{/* <DotLottiePlayer
-							src="https://lottie.host/3c5001b6-7cd0-4fce-bcdc-05b2c4b73078/Yj6LV4QIRD.lottie"
-							loop
-							autoplay
-							className="mt-10 w-1/3 mx-auto cursor-pointer"
-							speed={isClicked ? 10 : 1}
-							onClick={() => {
-								if (isClicked) return
-								setIsClicked(true)
-
-								setTimeout(() => {
-									setIsZoom(true)
-								}, 1500)
-
-								setTimeout(() => {
-									const randomNumber = Math.floor(Math.random() * 9) + 1
-									setMessageNumber(randomNumber)
-									setIsZoom(false)
-									setIsZoomOut(true)
-									window.history.pushState(null, '', `/${randomNumber}`)
-								}, 2000)
-							}}
-						/> */}
-							<img
+							{/* <img
 								className="mx-auto w-1/2"
 								src={isClicked ? '/2.png' : '/1.png'}
 								alt="PopBui"
-							/>
+							/> */}
 						</motion.div>
 						{/* <p
 						className="text-5xl"
@@ -264,16 +250,39 @@ function App() {
 					}}
 				>
 					<div
-						className="w-full h-full px-3 py-4 overflow-y-none bg-gray-50 rounded-t-large max-w-3xl"
+						className="w-full h-full overflow-y-none bg-gray-50 rounded-t-large max-w-3xl"
 						onClick={() => {
 							setIsOpenLeaderboard((prev) => !prev)
 						}}
 					>
 						{
-							isOpenLeaderboard ? 'Leaderboard' : 'Show Leaderboard'
+							isOpenLeaderboard ? (
+								<p className="px-3 pt-4 text-3xl">
+									Leaderboard
+								</p>
+							) : (
+									<div className="flex flex-row py-4 px-0 text-black cursor-pointer">
+										<p className="block py-0 px-4 m-0 text-base font-normal text-black border-r border-solid cursor-pointer border-zinc-100">
+											🏆
+										</p>
+										<div className="flex flex-col flex-1 items-center py-0 px-4 text-black border-r border-solid cursor-pointer border-zinc-100">
+											<div className="flex flex-grow justify-between w-full text-xs text-black cursor-pointer">
+												<span className="flex flex-row items-center text-base text-black cursor-pointer">
+													🥇 {totalLeaderboard ? totalLeaderboard[0].username || 'Loading...' : 'Loading...'}
+												</span>
+												<span className="flex flex-row items-center text-xs font-semibold text-black cursor-pointer">
+													🥈 {totalLeaderboard ? totalLeaderboard[1].username || 'Loading...' : 'Loading...'}
+												</span>
+												<span className="flex flex-row items-center text-xs text-black cursor-pointer">
+													🥉 {totalLeaderboard ? totalLeaderboard[2].username || 'Loading...' : 'Loading...'}
+												</span>
+											</div>
+										</div>
+									</div>
+								)
 						}
 						<ScrollShadow
-							className="h-full mt-3"
+							className="h-full mt-3 px-3 pb-4"
 							style={{
 								// visibility: isOpenLeaderboard ? 'visible' : 'hidden',
 							}}
@@ -296,7 +305,7 @@ function App() {
 												className="flex justify-between"
 											>
 												<span>{item.username}</span>
-												<span>{item.popCount}</span>
+												<span>{item.popCount} Bui</span>
 											</p>
 										)) : 'Loading...'
 									}
@@ -317,7 +326,7 @@ function App() {
 													className="flex justify-between"
 												>
 													<span>{item.username}</span>
-													<span>{item.popCount}</span>
+													<span>{item.popCount} Bui</span>
 												</p>
 											)) : 'Loading...'
 									}

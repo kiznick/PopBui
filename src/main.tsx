@@ -15,7 +15,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                 <GoogleReCaptchaProvider
                     reCaptchaKey={RECAPTCHA_SITE_KEY}
                 >
-                    <div className="flex justify-between p-5">
+                    <div className="flex justify-between p-5 pb-0">
                         <div className="flex-auto">
                             <img
                                 src="./logo/muic.png"
@@ -40,7 +40,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                     </div>
                     <App />
                     <div
-                        className="p-5 text-center w-full mb-14"
+                        className="text-center w-full"
                     >
                         <p>Join us for election</p>
                         <p>Date: 3-4 July 2024 Time: 10:00-16:00</p>
