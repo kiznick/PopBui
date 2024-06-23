@@ -166,7 +166,7 @@ function App() {
 				}}
 			>
 				<div
-					className="py-10 px-5 text-center flex items-center select-none"
+					className="py-4 px-5 text-center flex items-center select-none"
 				>
 					<div className="mx-auto">
 						<p
