@@ -1,12 +1,12 @@
 import { Button, ScrollShadow, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure, Input } from '@nextui-org/react'
 // import clsx from 'clsx'
 import axios from 'axios'
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 // import { DotLottiePlayer } from '@dotlottie/react-player'
 // import '@dotlottie/react-player/dist/index.css'
 import { Howl } from 'howler'
-import { GoogleReCaptchaProvider, useGoogleReCaptcha } from 'react-google-recaptcha-v3'
+import { useGoogleReCaptcha } from 'react-google-recaptcha-v3'
 
 type LeaderboardType = {
 	username: string
@@ -15,7 +15,6 @@ type LeaderboardType = {
 
 function App() {
 	const time = 3
-	const RECAPTCHA_SITE_KEY = '6LfmTv8pAAAAAHD64gDfaGs7_XTch3-EP_L04z03'
 
 	const apiServer = 'https://popbui-api.kiznick.me/'
 
@@ -40,23 +39,32 @@ function App() {
 	const [totalLeaderboard, setTotalLeaderboard] = useState<LeaderboardType[]>([])
 	const [highestLeaderboard, setHighestLeaderboard] = useState<LeaderboardType[]>([])
 
-	const sendData = useCallback(async () => {
-		if (!executeRecaptcha) return
+	useEffect(() => {
+		const sendData = async () => {
+			if (!executeRecaptcha) return alert('Recaptcha not ready yet.')
 
-		if (count === 0) return
-		if (count > maxClick) return alert('You clicked too much.')
+			if (count === 0) return
+			if (count > maxClick) return alert('You clicked too much.')
 
-		const token = await executeRecaptcha('submit')
-		const response = await axios.post(`${apiServer}submit`, {
-			token,
-			username,
-			popCount: count,
-		})
+			const token = await executeRecaptcha('kiznick')
+			const response = await axios.post(`${apiServer}kiznick`, {
+				token,
+				username,
+				popCount: count,
+			})
 
-		if (response.data.error) {
-			alert(response.data.message)
+			if (response.data.error) {
+				alert(response.data.message)
+			}
 		}
-	}, [count, executeRecaptcha, maxClick, username])
+
+		if(!isRunning && count > 0) {
+			sendData()
+			console.log('Send data.', isRunning, count)
+		} else {
+			console.log('Not ready to send data.', isRunning, count)
+		}
+	}, [count, executeRecaptcha, isRunning, maxClick, username])
 
 	useEffect(() => {
 		let intervalId = undefined
@@ -66,7 +74,6 @@ function App() {
 				setTimeLeft(timeLeft - 1)
 			}, 1000)
 		} else if (isRunning && timeLeft <= 0) {
-			sendData()
 			setIsRunning(() => false)
 			setTimeout(() => {
 				setIsLockButton(() => false)
@@ -76,7 +83,7 @@ function App() {
 		return () => {
 			clearInterval(intervalId)
 		}
-	}, [isRunning, sendData, timeLeft])
+	}, [isRunning, timeLeft])
 
 	useEffect(() => {
 		const updateLeaderboard = async () => {
@@ -114,9 +121,7 @@ function App() {
 	}
 
 	return (
-		<GoogleReCaptchaProvider
-			reCaptchaKey={RECAPTCHA_SITE_KEY}
-		>
+		<>
 			<div
 				className='container mx-auto flex flex-col justify-between'
 			>
@@ -296,15 +301,15 @@ function App() {
 									</p>
 									{
 										highestLeaderboard ?
-										highestLeaderboard.map((item, index) => (
-											<p
-												key={index}
-												className="flex justify-between"
-											>
-												<span>{item.username}</span>
-												<span>{item.popCount}</span>
-											</p>
-										)) : 'Loading...'
+											highestLeaderboard.map((item, index) => (
+												<p
+													key={index}
+													className="flex justify-between"
+												>
+													<span>{item.username}</span>
+													<span>{item.popCount}</span>
+												</p>
+											)) : 'Loading...'
 									}
 								</div>
 							</div>
@@ -362,7 +367,7 @@ function App() {
 					)}
 				</ModalContent>
 			</Modal>
-		</GoogleReCaptchaProvider>
+		</>
 	)
 }
 
