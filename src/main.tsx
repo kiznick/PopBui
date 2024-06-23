@@ -5,7 +5,6 @@ import './index.css'
 import { NextUIProvider, ScrollShadow } from '@nextui-org/react'
 import { GoogleReCaptchaProvider } from 'react-google-recaptcha-v3'
 
-
 const RECAPTCHA_SITE_KEY = '6LfmTv8pAAAAAHD64gDfaGs7_XTch3-EP_L04z03'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
