@@ -1,4 +1,4 @@
-import { Button, ScrollShadow, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure, Input } from '@nextui-org/react'
+import { Button, ScrollShadow, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure, Input, Progress } from '@nextui-org/react'
 // import clsx from 'clsx'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
@@ -10,19 +10,22 @@ import { useGoogleReCaptcha } from 'react-google-recaptcha-v3'
 
 type LeaderboardType = {
 	username: string
-	popCount: number
+	buiCount: number
 }
 
 function App() {
 	const time = 5
+	const targetBui = 10000
 
 	const apiServer = 'https://popbui-api.kiznick.me/'
 
 	const maxClick = 15 * time
-	const popSound = new Howl({
-		src: ['/pop.mp3'],
-		volume: 1
-	})
+
+	const medalEmoji: { [key: number]: string } = {
+		1: '🥇',
+		2: '🥈',
+		3: '🥉',
+	}
 
 	const usernameModal = useDisclosure()
 	const { executeRecaptcha } = useGoogleReCaptcha()
@@ -38,9 +41,10 @@ function App() {
 	const [inputUsername, setInputUsername] = useState('')
 	const [totalLeaderboard, setTotalLeaderboard] = useState<LeaderboardType[]>([])
 	const [highestLeaderboard, setHighestLeaderboard] = useState<LeaderboardType[]>([])
+	const [totalBui, setTotalBui] = useState(0)
 
 	const numberWithCommas = (n: string | number) => {
-		return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+		return Number(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 	}
 
 	useEffect(() => {
@@ -54,7 +58,7 @@ function App() {
 			const response = await axios.post(`${apiServer}kiznick`, {
 				token,
 				username,
-				popCount: count,
+				buiCount: count,
 			})
 
 			if (response.data.error) {
@@ -101,6 +105,7 @@ function App() {
 
 			setTotalLeaderboard(leaderboard.totalRanking)
 			setHighestLeaderboard(leaderboard.highestRanking)
+			setTotalBui(leaderboard.totalBui)
 		}
 
 		updateLeaderboard()
@@ -119,20 +124,35 @@ function App() {
 		setUsername(localUsername)
 	}, [])
 
-	const handleMouseDown = () => {
-		setIsOpenLeaderboard(false)
+	useEffect(() => {
+		const popSound = new Howl({
+			src: ['/pop.mp3'],
+			volume: 1
+		})
 
-		if (!isRunning) return
-		if (isClicked) return
+		const handleMouseDown = () => {
+			setIsOpenLeaderboard(false)
 
-		popSound.play()
-		setCount((prevCount) => prevCount + 1)
-		setIsClicked(true)
-	}
+			if (!isRunning) return
+			if (isClicked) return
 
-	const handleMouseUp = () => {
-		setIsClicked(false)
-	}
+			popSound.play()
+			setCount((prevCount) => prevCount + 1)
+			setIsClicked(true)
+		}
+
+		const handleMouseUp = () => {
+			setIsClicked(false)
+		}
+
+		window.addEventListener('pointerdown', handleMouseDown)
+		window.addEventListener('pointerup', handleMouseUp)
+
+		return () => {
+			window.removeEventListener('pointerdown', handleMouseDown)
+			window.removeEventListener('pointerup', handleMouseUp)
+		}
+	}, [isClicked, isRunning])
 
 	return (
 		<>
@@ -147,8 +167,6 @@ function App() {
 			>
 				<div
 					className="py-10 px-5 text-center flex items-center select-none"
-					onPointerDown={handleMouseDown}
-					onPointerUp={handleMouseUp}
 				>
 					<div className="mx-auto">
 						<p
@@ -167,7 +185,7 @@ function App() {
 						<p
 							className='text-4xl lg:text-5xl'
 						>
-							Pop: <span className="font-bold">{count}</span>
+							<span className="font-bold">{count}</span> Bui
 						</p>
 						<p
 							className='text-xl flex items-center justify-center gap-2 mt-5'
@@ -225,26 +243,17 @@ function App() {
 								isLockButton ? 'Wait' : 'Start'
 							}
 						</Button>
-						<motion.div
-							className="m-10"
-							animate={{ scale: isClicked ? 1.2 : 1 }}
-						>
-							{/* <img
-								className="mx-auto w-1/2"
-								src={isClicked ? '/2.png' : '/1.png'}
-								alt="PopBui"
-							/> */}
-						</motion.div>
-						{/* <p
-						className="text-5xl"
-					>
-						Start click !
-					</p> */}
+						<Progress
+							className="mt-12"
+							label={`We will do a Tiktok dance if everyone reaches ${numberWithCommas(targetBui)} Bui. (${numberWithCommas(totalBui)}/${numberWithCommas(targetBui)} Bui)`}
+							value={totalBui}
+							maxValue={targetBui}
+							color={totalBui >= targetBui ? 'success' : 'primary'}
+						/>
 					</div>
 				</div>
-				{/* -translate-y-full sm:translate-y-0 */}
 				<motion.div
-					className={`fixed bottom-0 z-40 w-screen flex items-center justify-center`}
+					className={`fixed bottom-0 left-0 z-40 w-screen flex items-center justify-center`}
 					style={{
 						margin: '0 auto',
 						height: '3.5rem',
@@ -265,25 +274,25 @@ function App() {
 									Leaderboard
 								</p>
 							) : (
-									<div className="flex flex-row py-4 px-0 text-black cursor-pointer">
-										<p className="block py-0 px-4 m-0 text-base font-normal text-black border-r border-solid cursor-pointer border-zinc-100">
-											🏆
-										</p>
-										<div className="flex flex-col flex-1 items-center py-0 px-4 text-black border-r border-solid cursor-pointer border-zinc-100">
-											<div className="flex flex-grow justify-between w-full text-xs text-black cursor-pointer">
-												<span className="flex flex-row items-center text-base text-black cursor-pointer">
-													🥇 {totalLeaderboard ? totalLeaderboard[0]?.username || 'Loading...' : 'Loading...'}
-												</span>
-												<span className="flex flex-row items-center text-xs font-semibold text-black cursor-pointer">
-													🥈 {totalLeaderboard ? totalLeaderboard[1]?.username || 'Loading...' : 'Loading...'}
-												</span>
-												<span className="flex flex-row items-center text-xs text-black cursor-pointer">
-													🥉 {totalLeaderboard ? totalLeaderboard[2]?.username || 'Loading...' : 'Loading...'}
-												</span>
-											</div>
+								<div className="flex flex-row py-4 px-0 text-black cursor-pointer">
+									<p className="block py-0 px-4 m-0 text-base font-normal text-black border-r border-solid cursor-pointer border-zinc-100">
+										🏆
+									</p>
+									<div className="flex flex-col flex-1 items-center py-0 px-4 text-black border-r border-solid cursor-pointer border-zinc-100">
+										<div className="flex flex-grow justify-between w-full text-xs text-black cursor-pointer">
+											<span className="flex flex-row items-center text-base text-black cursor-pointer">
+												🥇 {totalLeaderboard ? totalLeaderboard[0]?.username || 'Loading...' : 'Loading...'}
+											</span>
+											<span className="flex flex-row items-center text-xs font-semibold text-black cursor-pointer">
+												🥈 {totalLeaderboard ? totalLeaderboard[1]?.username || 'Loading...' : 'Loading...'}
+											</span>
+											<span className="flex flex-row items-center text-xs text-black cursor-pointer">
+												🥉 {totalLeaderboard ? totalLeaderboard[2]?.username || 'Loading...' : 'Loading...'}
+											</span>
 										</div>
 									</div>
-								)
+								</div>
+							)
 						}
 						<ScrollShadow
 							className="h-full mt-3 px-3 pb-4"
@@ -308,8 +317,8 @@ function App() {
 												key={index}
 												className="flex justify-between"
 											>
-												<span>{item.username}</span>
-												<span>{numberWithCommas(item.popCount)} Bui</span>
+												<span>{medalEmoji[index + 1] || `${index + 1}.`} {item.username}</span>
+												<span>{numberWithCommas(item.buiCount)} Bui</span>
 											</p>
 										)) : 'Loading...'
 									}
@@ -329,8 +338,8 @@ function App() {
 													key={index}
 													className="flex justify-between"
 												>
-													<span>{item.username}</span>
-													<span>{numberWithCommas(item.popCount)} Bui</span>
+													<span>{medalEmoji[index + 1] || `${index + 1}.`} {item.username}</span>
+													<span>{numberWithCommas(item.buiCount)} Bui</span>
 												</p>
 											)) : 'Loading...'
 									}
