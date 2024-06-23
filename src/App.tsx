@@ -39,6 +39,10 @@ function App() {
 	const [totalLeaderboard, setTotalLeaderboard] = useState<LeaderboardType[]>([])
 	const [highestLeaderboard, setHighestLeaderboard] = useState<LeaderboardType[]>([])
 
+	const numberWithCommas = (n: string | number) => {
+		return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+	}
+
 	useEffect(() => {
 		const sendData = async () => {
 			if (!executeRecaptcha) return alert('Recaptcha not ready yet.')
@@ -305,7 +309,7 @@ function App() {
 												className="flex justify-between"
 											>
 												<span>{item.username}</span>
-												<span>{item.popCount} Bui</span>
+												<span>{numberWithCommas(item.popCount)} Bui</span>
 											</p>
 										)) : 'Loading...'
 									}
@@ -326,7 +330,7 @@ function App() {
 													className="flex justify-between"
 												>
 													<span>{item.username}</span>
-													<span>{item.popCount} Bui</span>
+													<span>{numberWithCommas(item.popCount)} Bui</span>
 												</p>
 											)) : 'Loading...'
 									}
