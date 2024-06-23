@@ -295,7 +295,7 @@ function App() {
 							)
 						}
 						<ScrollShadow
-							className="h-full mt-3 px-3 pb-4"
+							className="h-full mt-3 px-3 pb-20"
 							style={{
 								// visibility: isOpenLeaderboard ? 'visible' : 'hidden',
 							}}
