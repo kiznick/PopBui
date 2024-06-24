@@ -7,9 +7,12 @@ type LeaderboardType = {
     buiCount: number
 }
 
-function Display() {
-    const targetBui = 10000
+type MileStoneType = {
+    buiCount: number
+    message: string
+}
 
+function Display() {
     const apiServer = 'https://popbui-api.kiznick.me/'
 
     const medalEmoji: { [key: number]: string } = {
@@ -22,6 +25,8 @@ function Display() {
     const [totalLeaderboard, setTotalLeaderboard] = useState<LeaderboardType[]>([])
     const [highestLeaderboard, setHighestLeaderboard] = useState<LeaderboardType[]>([])
     const [totalBui, setTotalBui] = useState(0)
+	const [mileStone, setMileStone] = useState<MileStoneType[]>([])
+    const [currentMileStone, setCurrentMileStone] = useState<MileStoneType | null>(null)
 
     const numberWithCommas = (n: string | number) => {
         return Number(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
@@ -47,6 +52,30 @@ function Display() {
             updateLeaderboard()
         }, 1000 * 2)
     }, [])
+
+    useEffect(() => {
+        const updateMilestone = async () => {
+            const response = await axios.get(`${apiServer}milestone`)
+
+            if (response.data.error) {
+                return alert(response.data.message)
+            }
+
+            setMileStone(response.data)
+        }
+
+        updateMilestone()
+        setInterval(() => {
+            updateMilestone()
+        }, 1000 * 5)
+    }, [])
+
+    useEffect(() => {
+        if (!mileStone) return
+
+        const currentMileStone = mileStone.find((item: MileStoneType) => totalBui < item.buiCount) || null
+        setCurrentMileStone(currentMileStone)
+    }, [totalBui, mileStone])
 
     useEffect(() => {
         const randomIsBui = async () => {
@@ -148,13 +177,16 @@ function Display() {
                             </div>
                         </div>
 
-                        <Progress
-                            className="mt-6"
-                            label={`We will do a Tiktok dance if everyone reaches ${numberWithCommas(targetBui)} Bui. (${numberWithCommas(totalBui)}/${numberWithCommas(targetBui)} Bui)`}
-                            value={totalBui}
-                            maxValue={targetBui}
-                            color={totalBui >= targetBui ? 'success' : 'primary'}
-                        />
+                        {
+                            currentMileStone ? (
+                                <Progress
+                                    label={`${currentMileStone.message} if everyone reaches ${numberWithCommas(currentMileStone.buiCount)} Bui. (${numberWithCommas(totalBui)}/${numberWithCommas(currentMileStone.buiCount)} Bui)`}
+                                    value={totalBui}
+                                    maxValue={currentMileStone.buiCount}
+                                    color={totalBui >= currentMileStone.buiCount ? 'success' : 'primary'}
+                                />
+                            ) : null
+                        }
                     </div>
                 </div>
             </div>

@@ -135,7 +135,7 @@ function Play() {
 	}, [])
 
 	useEffect(() => {
-		if(!mileStone) return
+		if (!mileStone) return
 
 		const currentMileStone = mileStone.find((item: MileStoneType) => totalBui < item.buiCount) || null
 		setCurrentMileStone(currentMileStone)
@@ -185,12 +185,12 @@ function Play() {
 		<>
 			<div
 				className='container mx-auto flex flex-col justify-between'
-				// style={{
-				// 	backgroundImage: `url('${isClicked ? '/2.png' : '/1.png'}')`,
-				// 	backgroundSize: 'contain',
-				// 	backgroundRepeat: 'no-repeat',
-				// 	backgroundPosition: 'center',
-				// }}
+			// style={{
+			// 	backgroundImage: `url('${isClicked ? '/2.png' : '/1.png'}')`,
+			// 	backgroundSize: 'contain',
+			// 	backgroundRepeat: 'no-repeat',
+			// 	backgroundPosition: 'center',
+			// }}
 			>
 				<div
 					className="py-4 px-5 text-center flex items-center select-none"
@@ -241,9 +241,16 @@ function Play() {
 										</div>
 									</>
 								) : (
-									<>
+									<span
+										onClick={() => {
+											if (!username) {
+												setInputUsername('')
+												return usernameModal.onOpen()
+											}
+										}}
+									>
 										Please click Start button to enter your name !
-									</>
+									</span>
 								)
 							}
 						</p>
