@@ -176,18 +176,29 @@ function Display() {
                                 </ScrollShadow>
                             </div>
                         </div>
-
-                        {
-                            currentMileStone ? (
-                                <Progress
-                                    className="mt-2"
-                                    label={`${currentMileStone.message} if everyone reaches ${numberWithCommas(currentMileStone.buiCount)} Bui. (${numberWithCommas(totalBui)}/${numberWithCommas(currentMileStone.buiCount)} Bui)`}
-                                    value={totalBui}
-                                    maxValue={currentMileStone.buiCount}
-                                    color={totalBui >= currentMileStone.buiCount ? 'success' : 'primary'}
-                                />
-                            ) : null
-                        }
+						{
+							currentMileStone ? (
+								<>
+									<Progress
+                                        className="mt-2"
+										label={`${currentMileStone.message} if everyone reaches ${numberWithCommas(currentMileStone.buiCount)} Bui. (${numberWithCommas(totalBui)}/${numberWithCommas(currentMileStone.buiCount)} Bui)`}
+										value={totalBui}
+										maxValue={currentMileStone.buiCount}
+										color={totalBui >= currentMileStone.buiCount ? 'success' : 'primary'}
+									/>
+								</>
+							) : mileStone ? (
+								<>
+									<Progress
+                                        className="mt-2"
+										label={`No more MileStone ;( (${numberWithCommas(totalBui)} Bui)`}
+										value={1}
+										maxValue={1}
+										color={'success'}
+									/>
+								</>
+							) : 'Loading...'
+						}
                     </div>
                 </div>
             </div>

@@ -14,13 +14,15 @@ type LeaderboardType = {
 type MileStoneType = {
 	buiCount: number
 	message: string
+	result: string | null
+	resultUrl: string | null
 }
 
 function Play() {
 	const time = 5
 
-	const apiServer = 'https://popbui-api.kiznick.me/'
-	// const apiServer = 'http://localhost:3000/'
+	// const apiServer = 'https://popbui-api.kiznick.me/'
+	const apiServer = 'http://localhost:3000/'
 
 	const maxClick = 30 * time
 
@@ -314,10 +316,37 @@ function Play() {
 											buiMilestoneModal.onOpen()
 										}}
 									>
-										Click me to view more MileStone !
+										Click here to view more MileStone !
 									</p>
 								</>
-							) : null
+							) : mileStone ? (
+								<>
+									<Progress
+										label={`No more MileStone ;( (${numberWithCommas(totalBui)} Bui)`}
+										value={1}
+										maxValue={1}
+										color={'success'}
+										onClick={() => {
+											if (isRunning) return
+
+											buiMilestoneModal.onOpen()
+										}}
+									/>
+									<p
+										className="mt-2"
+										style={{
+											visibility: isRunning ? 'hidden' : 'visible',
+										}}
+										onClick={() => {
+											if (isRunning) return
+
+											buiMilestoneModal.onOpen()
+										}}
+									>
+										Click here to view past MileStone !
+									</p>
+								</>
+							) : 'Loading...'
 						}
 					</div>
 				</div>
@@ -354,7 +383,7 @@ function Play() {
 										if (isRunning) return
 
 										setIsOpenLeaderboard(true)
-									}}	
+									}}
 								>
 									<p className="block py-0 px-4 m-0 text-base font-normal text-black border-r border-solid border-zinc-100">
 										🏆
@@ -547,13 +576,33 @@ function Play() {
 																					>
 																						{item.message}
 																					</p>
-																					{/*
-																					<p
-																						className="m-0 text-xs leading-5 text-default-500"
-																					>
-																						Description
-																					</p>
-																					*/}
+																					{
+																						item.result ?
+																							item.resultUrl ? (
+																								<a
+																									href={item.resultUrl}
+																									target='_blank'
+																									className="text-xs leading-5 text-primary"
+																								>
+																									{item.result}
+																								</a>
+																							) : (
+																								<p
+																									className="text-xs leading-5 text-primary"
+																								>
+																									{item.result}
+																								</p>
+																							)
+																						: item.resultUrl ? (
+																							<a
+																								href={item.resultUrl}
+																								target='_blank'
+																								className="text-xs leading-5 text-primary"
+																							>
+																								{item.resultUrl}
+																							</a>
+																						) : null
+																					}
 																				</div>
 																				<Chip
 																					color={isReached ? 'primary' : 'default'}
