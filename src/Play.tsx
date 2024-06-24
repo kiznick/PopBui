@@ -7,6 +7,7 @@ import { CheckCircleIcon } from '@heroicons/react/24/solid'
 import { useGoogleReCaptcha } from 'react-google-recaptcha-v3'
 
 type LeaderboardType = {
+	rank: number
 	username: string
 	buiCount: number
 }
@@ -100,23 +101,29 @@ function Play() {
 
 	useEffect(() => {
 		const updateLeaderboard = async () => {
-			const response = await axios.get(`${apiServer}leaderboard`)
+			try {
+				const response = await axios.get(`${apiServer}leaderboard`)
+				if (response.data.error) {
+					return alert(response.data.message)
+				}
+				const leaderboard = response.data
 
-			if (response.data.error) {
-				return alert(response.data.message)
+				setTotalLeaderboard(leaderboard.totalRanking)
+				setHighestLeaderboard(leaderboard.highestRanking)
+				setTotalBui(leaderboard.totalBui)
+			} catch (error) {
+				console.error('Error updating leaderboard:', error)
 			}
-
-			const leaderboard = response.data
-
-			setTotalLeaderboard(leaderboard.totalRanking)
-			setHighestLeaderboard(leaderboard.highestRanking)
-			setTotalBui(leaderboard.totalBui)
 		}
 
 		updateLeaderboard()
-		setInterval(() => {
+		const interval = setInterval(() => {
 			updateLeaderboard()
 		}, 1000 * 2)
+
+		return () => {
+			clearInterval(interval)
+		}
 	}, [])
 
 	useEffect(() => {
@@ -131,9 +138,13 @@ function Play() {
 		}
 
 		updateMilestone()
-		setInterval(() => {
+		const Interval = setInterval(() => {
 			updateMilestone()
 		}, 1000 * 5)
+
+		return () => {
+			clearInterval(Interval)
+		}
 	}, [])
 
 	useEffect(() => {
@@ -206,16 +217,6 @@ function Play() {
 						<p>
 							Click as much as you can in {time} seconds.
 						</p>
-						{/* <p
-							className='text-4xl lg:text-5xl mt-2'
-						>
-							Timeleft: <span className="font-bold">{timeLeft}</span>s
-						</p>
-						<p
-							className='text-4xl lg:text-5xl'
-						>
-							<span className="font-bold">{count}</span> Bui
-						</p> */}
 						<p
 							className='text-4xl lg:text-5xl'
 						>
@@ -456,6 +457,7 @@ function Play() {
 					</div>
 				</motion.div>
 			</div>
+			
 			<Modal
 				isOpen={usernameModal.isOpen}
 				onOpenChange={usernameModal.onOpenChange}
@@ -593,15 +595,15 @@ function Play() {
 																									{item.result}
 																								</p>
 																							)
-																						: item.resultUrl ? (
-																							<a
-																								href={item.resultUrl}
-																								target='_blank'
-																								className="text-xs leading-5 text-primary"
-																							>
-																								{item.resultUrl}
-																							</a>
-																						) : null
+																							: item.resultUrl ? (
+																								<a
+																									href={item.resultUrl}
+																									target='_blank'
+																									className="text-xs leading-5 text-primary"
+																								>
+																									{item.resultUrl}
+																								</a>
+																							) : null
 																					}
 																				</div>
 																				<Chip
@@ -618,10 +620,6 @@ function Play() {
 														}) :
 														'Loading...'
 												}
-
-
-
-
 											</ul>
 										</div>
 									</div>
