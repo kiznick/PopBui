@@ -157,7 +157,10 @@ function Play() {
 			volume: 1
 		})
 
-		const handleMouseDown = () => {
+		const handleMouseDown = (e: MouseEvent) => {
+			const target = e.target as HTMLElement
+			if (!isRunning && target.closest('.leaderboard')) return
+
 			setIsOpenLeaderboard(false)
 
 			if (!isRunning) return
@@ -319,7 +322,7 @@ function Play() {
 					</div>
 				</div>
 				<motion.div
-					className={`fixed bottom-0 left-0 z-40 w-screen flex items-center justify-center`}
+					className={`fixed bottom-0 left-0 z-40 w-screen flex items-center justify-center leaderboard`}
 					style={{
 						margin: '0 auto',
 						height: '3.5rem',
@@ -334,7 +337,7 @@ function Play() {
 						{
 							isOpenLeaderboard ? (
 								<p
-									className="px-4 pt-4 text-3xl"
+									className="px-4 pt-4 text-3xl cursor-pointer"
 									onClick={() => {
 										if (isRunning) return
 
@@ -353,18 +356,18 @@ function Play() {
 										setIsOpenLeaderboard(true)
 									}}	
 								>
-									<p className="block py-0 px-4 m-0 text-base font-normal text-black border-r border-solid cursor-pointer border-zinc-100">
+									<p className="block py-0 px-4 m-0 text-base font-normal text-black border-r border-solid border-zinc-100">
 										🏆
 									</p>
-									<div className="flex flex-col flex-1 items-center py-0 px-4 text-black border-r border-solid cursor-pointer border-zinc-100">
-										<div className="flex flex-grow justify-between w-full text-xs text-black cursor-pointer">
-											<span className="flex flex-row items-center text-base text-black cursor-pointer">
+									<div className="flex flex-col flex-1 items-center py-0 px-4 text-black border-r border-solid border-zinc-100">
+										<div className="flex flex-grow justify-between w-full text-xs text-black">
+											<span className="flex flex-row items-center text-base text-black">
 												🥇 {totalLeaderboard ? totalLeaderboard[0]?.username || 'Loading...' : 'Loading...'}
 											</span>
-											<span className="flex flex-row items-center text-xs font-semibold text-black cursor-pointer">
+											<span className="flex flex-row items-center text-xs font-semibold text-black">
 												🥈 {totalLeaderboard ? totalLeaderboard[1]?.username || 'Loading...' : 'Loading...'}
 											</span>
-											<span className="flex flex-row items-center text-xs text-black cursor-pointer">
+											<span className="flex flex-row items-center text-xs text-black">
 												🥉 {totalLeaderboard ? totalLeaderboard[2]?.username || 'Loading...' : 'Loading...'}
 											</span>
 										</div>
