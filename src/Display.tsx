@@ -180,6 +180,7 @@ function Display() {
                         {
                             currentMileStone ? (
                                 <Progress
+                                    className="mt-2"
                                     label={`${currentMileStone.message} if everyone reaches ${numberWithCommas(currentMileStone.buiCount)} Bui. (${numberWithCommas(totalBui)}/${numberWithCommas(currentMileStone.buiCount)} Bui)`}
                                     value={totalBui}
                                     maxValue={currentMileStone.buiCount}
