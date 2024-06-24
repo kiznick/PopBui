@@ -1,8 +1,9 @@
-import { Button, ScrollShadow, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure, Input, Progress } from '@nextui-org/react'
+import { Button, ScrollShadow, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure, Input, Progress, Chip } from '@nextui-org/react'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Howl } from 'howler'
+import { CheckCircleIcon } from '@heroicons/react/24/solid'
 import { useGoogleReCaptcha } from 'react-google-recaptcha-v3'
 
 type LeaderboardType = {
@@ -10,11 +11,16 @@ type LeaderboardType = {
 	buiCount: number
 }
 
+type MileStoneType = {
+	buiCount: number
+	message: string
+}
+
 function Play() {
 	const time = 5
-	const targetBui = 10000
 
-	const apiServer = 'https://popbui-api.kiznick.me/'
+	// const apiServer = 'https://popbui-api.kiznick.me/'
+	const apiServer = 'http://localhost:3000/'
 
 	const maxClick = 15 * time
 
@@ -25,6 +31,7 @@ function Play() {
 	}
 
 	const usernameModal = useDisclosure()
+	const buiMilestoneModal = useDisclosure()
 	const { executeRecaptcha } = useGoogleReCaptcha()
 
 	const [isClicked, setIsClicked] = useState(false)
@@ -39,6 +46,8 @@ function Play() {
 	const [totalLeaderboard, setTotalLeaderboard] = useState<LeaderboardType[]>([])
 	const [highestLeaderboard, setHighestLeaderboard] = useState<LeaderboardType[]>([])
 	const [totalBui, setTotalBui] = useState(0)
+	const [mileStone, setMileStone] = useState<MileStoneType[]>([])
+	const [currentMileStone, setCurrentMileStone] = useState<MileStoneType | null>(null)
 
 	const numberWithCommas = (n: string | number) => {
 		return Number(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
@@ -65,9 +74,6 @@ function Play() {
 
 		if (!isRunning && count > 0 && username) {
 			sendData()
-			console.log('Send data.', isRunning, count)
-		} else {
-			console.log('Not ready to send data.', isRunning, count)
 		}
 	}, [count, executeRecaptcha, isRunning, maxClick, username])
 
@@ -110,6 +116,30 @@ function Play() {
 			updateLeaderboard()
 		}, 1000 * 2)
 	}, [])
+
+	useEffect(() => {
+		const updateMilestone = async () => {
+			const response = await axios.get(`${apiServer}milestone`)
+
+			if (response.data.error) {
+				return alert(response.data.message)
+			}
+
+			setMileStone(response.data)
+		}
+
+		updateMilestone()
+		setInterval(() => {
+			updateMilestone()
+		}, 1000 * 5)
+	}, [])
+
+	useEffect(() => {
+		if(!mileStone) return
+
+		const currentMileStone = mileStone.find((item: MileStoneType) => totalBui < item.buiCount) || null
+		setCurrentMileStone(currentMileStone)
+	}, [totalBui, mileStone])
 
 	useEffect(() => {
 		const localUsername = localStorage.getItem('k-username')?.toLowerCase()
@@ -155,12 +185,12 @@ function Play() {
 		<>
 			<div
 				className='container mx-auto flex flex-col justify-between'
-				style={{
-					backgroundImage: `url('${isClicked ? '/2.png' : '/1.png'}')`,
-					backgroundSize: 'contain',
-					backgroundRepeat: 'no-repeat',
-					backgroundPosition: 'center',
-				}}
+				// style={{
+				// 	backgroundImage: `url('${isClicked ? '/2.png' : '/1.png'}')`,
+				// 	backgroundSize: 'contain',
+				// 	backgroundRepeat: 'no-repeat',
+				// 	backgroundPosition: 'center',
+				// }}
 			>
 				<div
 					className="py-4 px-5 text-center flex items-center select-none"
@@ -174,7 +204,7 @@ function Play() {
 						<p>
 							Click as much as you can in {time} seconds.
 						</p>
-						<p
+						{/* <p
 							className='text-4xl lg:text-5xl mt-2'
 						>
 							Timeleft: <span className="font-bold">{timeLeft}</span>s
@@ -183,6 +213,11 @@ function Play() {
 							className='text-4xl lg:text-5xl'
 						>
 							<span className="font-bold">{count}</span> Bui
+						</p> */}
+						<p
+							className='text-4xl lg:text-5xl'
+						>
+							<span className="font-bold">{timeLeft}</span>s | <span className="font-bold">{count}</span> Bui
 						</p>
 						<p
 							className='text-xl flex items-center justify-center gap-2 mt-5'
@@ -240,13 +275,29 @@ function Play() {
 								isLockButton ? 'Wait' : 'Start'
 							}
 						</Button>
-						<Progress
-							className="mt-12"
-							label={`We will do a Tiktok dance if everyone reaches ${numberWithCommas(targetBui)} Bui. (${numberWithCommas(totalBui)}/${numberWithCommas(targetBui)} Bui)`}
-							value={totalBui}
-							maxValue={targetBui}
-							color={totalBui >= targetBui ? 'success' : 'primary'}
+						<img
+							src={isClicked ? '/2.png' : '/1.png'}
+							className="mx-auto max-w-full max-h-80"
 						/>
+						{
+							currentMileStone ? (
+								<>
+									<Progress
+										label={`${currentMileStone.message} if everyone reaches ${numberWithCommas(currentMileStone.buiCount)} Bui. (${numberWithCommas(totalBui)}/${numberWithCommas(currentMileStone.buiCount)} Bui)`}
+										value={totalBui}
+										maxValue={currentMileStone.buiCount}
+										color={totalBui >= currentMileStone.buiCount ? 'success' : 'primary'}
+										onClick={buiMilestoneModal.onOpen}
+									/>
+									<p
+										className="mt-2"
+										onClick={buiMilestoneModal.onOpen}
+									>
+										Click me to view more MileStone !
+									</p>
+								</>
+							) : null
+						}
 					</div>
 				</div>
 				<motion.div
@@ -396,6 +447,108 @@ function Play() {
 							</ModalFooter>
 						</>
 					)}
+				</ModalContent>
+			</Modal>
+
+			<Modal
+				isOpen={buiMilestoneModal.isOpen}
+				onOpenChange={buiMilestoneModal.onOpenChange}
+			>
+				<ModalContent>
+					{(onClose) => {
+						return <>
+							<ModalHeader className="flex flex-col gap-1">
+								Bui MileStone !
+							</ModalHeader>
+							<ModalBody>
+								<div className="leading-6">
+									<div className="px-6 mx-auto max-w-lg">
+										<div className="flow-root">
+											<ul
+												className="p-0 mx-0 mt-0 -mb-7"
+											>
+												{
+													mileStone ?
+														mileStone.map((item, index) => {
+															const isReached = totalBui >= item.buiCount
+															const No = index + 1
+															return (
+																<li className="text-left">
+																	<div
+																		className="relative pb-8"
+																	>
+																		{
+																			No != mileStone.length && (
+																				<span
+																					className="absolute top-6 left-4 w-px -ml-[0.5px] h-4/5 bg-default-200"
+																				/>
+																			)
+																		}
+																		<div
+																			className="flex relative"
+																		>
+																			<div>
+																				<span
+																					className="flex justify-center items-center w-8 h-8 rounded-full"
+																				>
+																					{
+																						isReached ? (
+																							<CheckCircleIcon className="h-12 w-12 text-primary" />
+																						) : (
+																							<Chip>
+																								{No}
+																							</Chip>
+																						)
+																					}
+																				</span>
+																			</div>
+																			<div
+																				className="flex flex-1 justify-between pt-1 mr-0 ml-3 min-w-0"
+																			>
+																				<div>
+																					<p
+																						className="m-0 text-sm leading-5"
+																					>
+																						{item.message}
+																					</p>
+																					{/*
+																					<p
+																						className="m-0 text-xs leading-5 text-default-500"
+																					>
+																						Description
+																					</p>
+																					*/}
+																				</div>
+																				<Chip
+																					color={isReached ? 'primary' : 'default'}
+																					className="mr-0 ml-4 text-sm leading-5 text-right whitespace-nowrap"
+																				>
+																					{numberWithCommas(item.buiCount)} Bui
+																				</Chip>
+																			</div>
+																		</div>
+																	</div>
+																</li>
+															)
+														}) :
+														'Loading...'
+												}
+
+
+
+
+											</ul>
+										</div>
+									</div>
+								</div>
+							</ModalBody>
+							<ModalFooter>
+								<Button onPress={onClose}>
+									Close
+								</Button>
+							</ModalFooter>
+						</>
+					}}
 				</ModalContent>
 			</Modal>
 		</>
