@@ -330,19 +330,29 @@ function Play() {
 				>
 					<div
 						className="w-full h-full overflow-y-none bg-gray-50 rounded-t-large max-w-3xl"
-						onClick={() => {
-							if (isRunning) return
-
-							setIsOpenLeaderboard((prev) => !prev)
-						}}
 					>
 						{
 							isOpenLeaderboard ? (
-								<p className="px-3 pt-4 text-3xl">
+								<p
+									className="px-4 pt-4 text-3xl"
+									onClick={() => {
+										if (isRunning) return
+
+										setIsOpenLeaderboard(false)
+									}}
+								>
 									Leaderboard
+									<span className="float-right mr-2">X</span>
 								</p>
 							) : (
-								<div className="flex flex-row py-4 px-0 text-black cursor-pointer">
+								<div
+									className="flex flex-row py-4 px-0 text-black cursor-pointer"
+									onClick={() => {
+										if (isRunning) return
+
+										setIsOpenLeaderboard(true)
+									}}	
+								>
 									<p className="block py-0 px-4 m-0 text-base font-normal text-black border-r border-solid cursor-pointer border-zinc-100">
 										🏆
 									</p>
