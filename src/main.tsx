@@ -2,14 +2,17 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
+import ReactGA from 'react-ga'
 import { NextUIProvider, ScrollShadow } from '@nextui-org/react'
 import { GoogleReCaptchaProvider } from 'react-google-recaptcha-v3'
 
 const RECAPTCHA_SITE_KEY = '6LfmTv8pAAAAAHD64gDfaGs7_XTch3-EP_L04z03'
 
+ReactGA.initialize('G-TJ93D2EK2Z')
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
-        <NextUIProvider className="h-screen">
+        <NextUIProvider className="h-screen touch-manipulation">
             <ScrollShadow>
                 <GoogleReCaptchaProvider
                     reCaptchaKey={RECAPTCHA_SITE_KEY}
