@@ -21,8 +21,8 @@ type MileStoneType = {
 function Play() {
 	const time = 5
 
-	// const apiServer = 'https://popbui-api.kiznick.me/'
-	const apiServer = 'http://localhost:3000/'
+	const apiServer = 'https://popbui-api.kiznick.me/'
+	// const apiServer = 'http://localhost:3000/'
 
 	const maxClick = 30 * time
 
