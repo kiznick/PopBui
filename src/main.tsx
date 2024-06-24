@@ -12,7 +12,7 @@ ReactGA.initialize('G-TJ93D2EK2Z')
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
-        <NextUIProvider className="h-screen touch-manipulation">
+        <NextUIProvider className="h-screen touch-manipulation select-none">
             <ScrollShadow>
                 <GoogleReCaptchaProvider
                     reCaptchaKey={RECAPTCHA_SITE_KEY}

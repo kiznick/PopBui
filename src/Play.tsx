@@ -174,6 +174,9 @@ function Play() {
 
 		window.addEventListener('pointerdown', handleMouseDown)
 		window.addEventListener('pointerup', handleMouseUp)
+		window.addEventListener('contextmenu', (e) => {
+			e.preventDefault()
+		})
 
 		return () => {
 			window.removeEventListener('pointerdown', handleMouseDown)
@@ -185,12 +188,6 @@ function Play() {
 		<>
 			<div
 				className='container mx-auto flex flex-col justify-between'
-			// style={{
-			// 	backgroundImage: `url('${isClicked ? '/2.png' : '/1.png'}')`,
-			// 	backgroundSize: 'contain',
-			// 	backgroundRepeat: 'no-repeat',
-			// 	backgroundPosition: 'center',
-			// }}
 			>
 				<div
 					className="py-4 px-5 text-center flex items-center select-none"
@@ -232,7 +229,7 @@ function Play() {
 												visibility: isRunning ? 'hidden' : 'visible',
 											}}
 											onClick={() => {
-												if(isRunning) return
+												if (isRunning) return
 
 												setUsername('')
 											}}
@@ -298,8 +295,8 @@ function Play() {
 										maxValue={currentMileStone.buiCount}
 										color={totalBui >= currentMileStone.buiCount ? 'success' : 'primary'}
 										onClick={() => {
-											if(isRunning) return
-										
+											if (isRunning) return
+
 											buiMilestoneModal.onOpen()
 										}}
 									/>
@@ -309,8 +306,8 @@ function Play() {
 											visibility: isRunning ? 'hidden' : 'visible',
 										}}
 										onClick={() => {
-											if(isRunning) return
-										
+											if (isRunning) return
+
 											buiMilestoneModal.onOpen()
 										}}
 									>
@@ -334,7 +331,7 @@ function Play() {
 					<div
 						className="w-full h-full overflow-y-none bg-gray-50 rounded-t-large max-w-3xl"
 						onClick={() => {
-							if(isRunning) return
+							if (isRunning) return
 
 							setIsOpenLeaderboard((prev) => !prev)
 						}}
@@ -421,6 +418,7 @@ function Play() {
 				isOpen={usernameModal.isOpen}
 				onOpenChange={usernameModal.onOpenChange}
 				placement='center'
+				className="touch-manipulation select-none"
 			>
 				<ModalContent>
 					{(onClose) => (
@@ -476,6 +474,8 @@ function Play() {
 			<Modal
 				isOpen={buiMilestoneModal.isOpen}
 				onOpenChange={buiMilestoneModal.onOpenChange}
+				placement='center'
+				className="touch-manipulation select-none"
 			>
 				<ModalContent>
 					{(onClose) => {
