@@ -15,8 +15,8 @@ type LeaderboardType = {
 type MileStoneType = {
 	buiCount: number
 	message: string
-	result: string | null
-	resultUrl: string | null
+	reward: string | null
+	rewardUrl: string | null
 }
 
 function Play() {
@@ -457,7 +457,7 @@ function Play() {
 					</div>
 				</motion.div>
 			</div>
-			
+
 			<Modal
 				isOpen={usernameModal.isOpen}
 				onOpenChange={usernameModal.onOpenChange}
@@ -579,31 +579,33 @@ function Play() {
 																						{item.message}
 																					</p>
 																					{
-																						item.result ?
-																							item.resultUrl ? (
-																								<a
-																									href={item.resultUrl}
-																									target='_blank'
-																									className="text-xs leading-5 text-primary"
-																								>
-																									{item.result}
-																								</a>
-																							) : (
-																								<p
-																									className="text-xs leading-5 text-primary"
-																								>
-																									{item.result}
-																								</p>
-																							)
-																							: item.resultUrl ? (
-																								<a
-																									href={item.resultUrl}
-																									target='_blank'
-																									className="text-xs leading-5 text-primary"
-																								>
-																									{item.resultUrl}
-																								</a>
-																							) : null
+																						isReached ?
+																							item.reward ?
+																								item.rewardUrl ? (
+																									<a
+																										href={item.rewardUrl}
+																										target='_blank'
+																										className="text-xs leading-5 text-primary"
+																									>
+																										{item.reward}
+																									</a>
+																								) : (
+																									<p
+																										className="text-xs leading-5 text-primary"
+																									>
+																										{item.reward}
+																									</p>
+																								)
+																								: item.rewardUrl ? (
+																									<a
+																										href={item.rewardUrl}
+																										target='_blank'
+																										className="text-xs leading-5 text-primary"
+																									>
+																										{item.rewardUrl}
+																									</a>
+																								) : 'Please wait for the reward.'
+																							: null
 																					}
 																				</div>
 																				<Chip
