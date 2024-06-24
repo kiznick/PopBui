@@ -232,6 +232,8 @@ function Play() {
 												visibility: isRunning ? 'hidden' : 'visible',
 											}}
 											onClick={() => {
+												if(isRunning) return
+
 												setUsername('')
 											}}
 										>
@@ -273,6 +275,7 @@ function Play() {
 								setTimeLeft(time)
 								setIsRunning(true)
 								setIsLockButton(true)
+								setIsOpenLeaderboard(false)
 							}}
 							style={{
 								visibility: isRunning ? 'hidden' : 'visible',
@@ -294,11 +297,22 @@ function Play() {
 										value={totalBui}
 										maxValue={currentMileStone.buiCount}
 										color={totalBui >= currentMileStone.buiCount ? 'success' : 'primary'}
-										onClick={buiMilestoneModal.onOpen}
+										onClick={() => {
+											if(isRunning) return
+										
+											buiMilestoneModal.onOpen()
+										}}
 									/>
 									<p
 										className="mt-2"
-										onClick={buiMilestoneModal.onOpen}
+										style={{
+											visibility: isRunning ? 'hidden' : 'visible',
+										}}
+										onClick={() => {
+											if(isRunning) return
+										
+											buiMilestoneModal.onOpen()
+										}}
 									>
 										Click me to view more MileStone !
 									</p>
@@ -320,6 +334,8 @@ function Play() {
 					<div
 						className="w-full h-full overflow-y-none bg-gray-50 rounded-t-large max-w-3xl"
 						onClick={() => {
+							if(isRunning) return
+
 							setIsOpenLeaderboard((prev) => !prev)
 						}}
 					>
