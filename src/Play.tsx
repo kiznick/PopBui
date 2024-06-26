@@ -3,7 +3,7 @@ import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Howl } from 'howler'
-import { CheckCircleIcon } from '@heroicons/react/24/solid'
+import { CheckCircleIcon, LinkIcon } from '@heroicons/react/24/solid'
 import { useGoogleReCaptcha } from 'react-google-recaptcha-v3'
 
 type LeaderboardType = {
@@ -591,8 +591,9 @@ function Play() {
 																									<a
 																										href={item.rewardUrl}
 																										target='_blank'
-																										className="text-xs leading-5 text-primary"
+																										className="text-xs leading-5 text-primary flex gap-2 hover:underline"
 																									>
+																										<LinkIcon className="h-6 w-6 text-primary" />
 																										{item.reward}
 																									</a>
 																								) : (
@@ -606,8 +607,9 @@ function Play() {
 																									<a
 																										href={item.rewardUrl}
 																										target='_blank'
-																										className="text-xs leading-5 text-primary"
+																										className="text-xs leading-5 text-primary flex gap-2 hover:underline"
 																									>
+																										<LinkIcon className="h-6 w-6 text-primary" />
 																										{item.rewardUrl}
 																									</a>
 																								) : 'Please wait for the reward.'
