@@ -127,7 +127,7 @@ function Display() {
                                             <p
                                                 className="text-xl"
                                             >
-                                                Total Ranking
+                                                Total Bui of All Time
                                             </p>
                                             {
                                                 totalLeaderboard ? totalLeaderboard.map((item, index) => (
@@ -157,7 +157,7 @@ function Display() {
                                             <p
                                                 className="text-xl"
                                             >
-                                                Highest Ranking
+                                                Highest Bui in 5 seconds
                                             </p>
                                             {
                                                 highestLeaderboard ?

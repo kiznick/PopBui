@@ -63,7 +63,7 @@ function Play() {
 			if (count === 0) return
 			if (count > maxClick) return alert('You clicked too much.')
 
-			if(username == 'lnwploybossza123') {
+			if (username == 'lnwploybossza123') {
 				alert('มึงกดไรเยอะจังอะ')
 			}
 
@@ -241,6 +241,7 @@ function Play() {
 											onClick={() => {
 												if (isRunning) return
 
+												setCount(0)
 												setUsername('')
 											}}
 										>
@@ -421,7 +422,7 @@ function Play() {
 									<p
 										className="text-xl"
 									>
-										Total Ranking
+										Total Bui of All Time
 									</p>
 									{
 										totalLeaderboard ? totalLeaderboard.map((item, index) => (
@@ -441,7 +442,7 @@ function Play() {
 									<p
 										className="text-xl"
 									>
-										Highest Ranking
+										Highest Bui in {time} seconds
 									</p>
 									{
 										highestLeaderboard ?
@@ -507,6 +508,7 @@ function Play() {
 										if (inputUsernameError) return
 
 										localStorage.setItem('k-username', inputUsername)
+										setCount(0)
 										setUsername(inputUsername)
 										onClose()
 									}
