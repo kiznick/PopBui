@@ -113,8 +113,8 @@ function Display() {
                             Leaderbboard
                         </p>
 
-                        <div className="flex gap-2">
-                            <div className="w-full h-full overflow-y-none bg-gray-50 rounded-large max-w-3xl">
+                        <div className="flex gap-2 w-[80vw] text-2xl">
+                            <div className="w-full h-full overflow-y-none bg-gray-50 rounded-large">
                                 <ScrollShadow
                                     className="h-full p-6"
                                 >
@@ -144,7 +144,7 @@ function Display() {
                                     </div>
                                 </ScrollShadow>
                             </div>
-                            <div className="w-full h-full overflow-y-none bg-gray-50 rounded-large max-w-3xl">
+                            <div className="w-full h-full overflow-y-none bg-gray-50 rounded-large max-w-5xl">
                                 <ScrollShadow
                                     className="h-full p-6"
                                 >
@@ -180,7 +180,7 @@ function Display() {
 							currentMileStone ? (
 								<>
 									<Progress
-                                        className="mt-2"
+                                        className="mt-2 w-[60vw] mx-auto"
 										label={`${currentMileStone.message} if everyone reaches ${numberWithCommas(currentMileStone.buiCount)} Bui. (${numberWithCommas(totalBui)}/${numberWithCommas(currentMileStone.buiCount)} Bui)`}
 										value={totalBui}
 										maxValue={currentMileStone.buiCount}
@@ -190,7 +190,7 @@ function Display() {
 							) : mileStone ? (
 								<>
 									<Progress
-                                        className="mt-2"
+                                        className="mt-2 w-[60vw] mx-auto"
 										label={`No more MileStone ;( (${numberWithCommas(totalBui)} Bui)`}
 										value={1}
 										maxValue={1}
@@ -202,7 +202,7 @@ function Display() {
                     </div>
                 </div>
             </div>
-            <div className="fixed bottom-16 right-16 text-center">
+            <div className="fixed bottom-8 right-8 text-center">
                 <p className="mb-2 text-3xl">Scan to Play !</p>
                 <img
                     src="./QRCode.png" 
