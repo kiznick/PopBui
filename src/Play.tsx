@@ -62,11 +62,7 @@ function Play() {
 
 			if (count === 0) return
 			if (count > maxClick) return alert('You clicked too much.')
-
-			if (username == 'lnwploybossza123') {
-				alert('มึงกดไรเยอะจังอะ')
-			}
-
+			
 			const token = await executeRecaptcha('kiznick')
 			const response = await axios.post(`${apiServer}kiznick`, {
 				token,
@@ -525,6 +521,7 @@ function Play() {
 				isOpen={buiMilestoneModal.isOpen}
 				onOpenChange={buiMilestoneModal.onOpenChange}
 				placement='center'
+				scrollBehavior='outside'
 				className="touch-manipulation select-none"
 			>
 				<ModalContent>
