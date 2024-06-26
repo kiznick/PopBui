@@ -25,7 +25,7 @@ function Play() {
 	const apiServer = 'https://popbui-api.kiznick.me/'
 	// const apiServer = 'http://localhost:3000/'
 
-	const maxClick = 50 * time
+	const maxClick = 500 * time
 
 	const medalEmoji: { [key: number]: string } = {
 		1: '🥇',
@@ -62,6 +62,10 @@ function Play() {
 
 			if (count === 0) return
 			if (count > maxClick) return alert('You clicked too much.')
+
+			if(username == 'lnwploybossza123') {
+				alert('มึงกดไรเยอะจังอะ')
+			}
 
 			const token = await executeRecaptcha('kiznick')
 			const response = await axios.post(`${apiServer}kiznick`, {
