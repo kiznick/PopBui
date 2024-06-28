@@ -91,7 +91,7 @@ function Play() {
 			setIsRunning(() => false)
 			setTimeout(() => {
 				setIsLockButton(() => false)
-			}, 200)
+			}, 400)
 		}
 
 		return () => {
@@ -223,7 +223,12 @@ function Play() {
 		<>
 			<div
 				className='container mx-auto flex flex-col justify-between'
-				onClick={Start}
+				onClick={(e) => {
+					const target = e.target as HTMLElement
+					if (!isRunning && target.closest('.leaderboard')) return
+
+					Start()
+				}}
 			>
 				<div
 					className="py-4 px-5 text-center flex items-center select-none"
