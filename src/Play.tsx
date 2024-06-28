@@ -91,7 +91,7 @@ function Play() {
 			setIsRunning(() => false)
 			setTimeout(() => {
 				setIsLockButton(() => false)
-			}, 1000)
+			}, 200)
 		}
 
 		return () => {
@@ -200,10 +200,30 @@ function Play() {
 		}
 	}, [isClicked, isRunning])
 
+	const Start = () => {
+		if (isLockButton) return
+
+		if (!username) {
+			setInputUsername('')
+			return usernameModal.onOpen()
+		}
+
+		if (!executeRecaptcha) {
+			return alert('Recaptcha not ready yet.')
+		}
+
+		setCount(0)
+		setTimeLeft(time)
+		setIsRunning(true)
+		setIsLockButton(true)
+		setIsOpenLeaderboard(false)
+	}
+
 	return (
 		<>
 			<div
 				className='container mx-auto flex flex-col justify-between'
+				onClick={Start}
 			>
 				<div
 					className="py-4 px-5 text-center flex items-center select-none"
@@ -263,24 +283,7 @@ function Play() {
 						<Button
 							className='mt-5'
 							disabled={isLockButton}
-							onClick={() => {
-								if (isLockButton) return
-
-								if (!username) {
-									setInputUsername('')
-									return usernameModal.onOpen()
-								}
-
-								if (!executeRecaptcha) {
-									return alert('Recaptcha not ready yet.')
-								}
-
-								setCount(0)
-								setTimeLeft(time)
-								setIsRunning(true)
-								setIsLockButton(true)
-								setIsOpenLeaderboard(false)
-							}}
+							onClick={Start}
 							style={{
 								visibility: isRunning ? 'hidden' : 'visible',
 							}}
