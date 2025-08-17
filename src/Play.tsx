@@ -20,7 +20,9 @@ type MileStoneType = {
 	rewardUrl: string | null
 }
 
-const unit = 'Hiw'
+const popImage = [
+	'2.png',
+]
 
 function Play() {
 	const medalEmoji: { [key: number]: string } = {
@@ -233,7 +235,7 @@ function Play() {
 						<p
 							className="text-7xl lg:text-8xl"
 						>
-							Pop{unit}
+							Pop{config.unit}
 						</p>
 						<p>
 							Click as much as you can in {config.second} seconds.
@@ -241,7 +243,7 @@ function Play() {
 						<p
 							className='text-4xl lg:text-5xl'
 						>
-							<span className="font-bold">{timeLeft}</span>s | <span className="font-bold">{count}</span> {unit}
+							<span className="font-bold">{timeLeft}</span>s | <span className="font-bold">{count}</span> {config.unit}
 						</p>
 						<p
 							className='text-xl flex items-center justify-center gap-2 mt-5'
@@ -294,14 +296,14 @@ function Play() {
 							}
 						</Button>
 						<img
-							src={isClicked ? '/2.png' : '/1.png'}
+							src={isClicked ? popImage[Math.floor(Math.random() * popImage.length)] : '/1.png'}
 							className="mx-auto max-w-full max-h-80"
 						/>
 						{
 							currentMileStone ? (
 								<>
 									<Progress
-										label={`${currentMileStone.message} if everyone reaches ${numberWithCommas(currentMileStone.count)} ${unit}. (${numberWithCommas(totalPop)}/${numberWithCommas(currentMileStone.count)} ${unit})`}
+										label={`${currentMileStone.message} if everyone reaches ${numberWithCommas(currentMileStone.count)} ${config.unit}. (${numberWithCommas(totalPop)}/${numberWithCommas(currentMileStone.count)} ${config.unit})`}
 										value={totalPop}
 										maxValue={currentMileStone.count}
 										color={totalPop >= currentMileStone.count ? 'success' : 'primary'}
@@ -328,7 +330,7 @@ function Play() {
 							) : mileStone ? (
 								<>
 									<Progress
-										label={`No more MileStone ;( (${numberWithCommas(totalPop)} ${unit})`}
+										label={`No more MileStone ;( (${numberWithCommas(totalPop)} ${config.unit})`}
 										value={1}
 										maxValue={1}
 										color={'success'}
@@ -422,7 +424,7 @@ function Play() {
 									<p
 										className="text-xl"
 									>
-										Total {unit} of All Time
+										Total {config.unit} of All Time
 									</p>
 									{
 										totalLeaderboard ? totalLeaderboard.map((item, index) => (
@@ -431,7 +433,7 @@ function Play() {
 												className="flex justify-between"
 											>
 												<span>{medalEmoji[index + 1] || `${index + 1}.`} {item.username}</span>
-												<span>{numberWithCommas(item.count)} {unit}</span>
+												<span>{numberWithCommas(item.count)} {config.unit}</span>
 											</p>
 										)) : 'Loading...'
 									}
@@ -442,7 +444,7 @@ function Play() {
 									<p
 										className="text-xl"
 									>
-										Highest {unit} in {config.second} seconds
+										Highest {config.unit} in {config.second} seconds
 									</p>
 									{
 										highestLeaderboard ?
@@ -452,7 +454,7 @@ function Play() {
 													className="flex justify-between"
 												>
 													<span>{medalEmoji[index + 1] || `${index + 1}.`} {item.username}</span>
-													<span>{numberWithCommas(item.count)} {unit}</span>
+													<span>{numberWithCommas(item.count)} {config.unit}</span>
 												</p>
 											)) : 'Loading...'
 									}
@@ -467,7 +469,7 @@ function Play() {
 				isOpen={usernameModal.isOpen}
 				onOpenChange={usernameModal.onOpenChange}
 				placement='center'
-				className="touch-manipulation select-none"
+				className="touch-manipulation select-none pointer-events-auto"
 			>
 				<ModalContent>
 					{(onClose) => (
@@ -526,13 +528,13 @@ function Play() {
 				onOpenChange={MilestoneModal.onOpenChange}
 				placement='center'
 				scrollBehavior='outside'
-				className="touch-manipulation select-none"
+				className="touch-manipulation select-none pointer-events-auto"
 			>
 				<ModalContent>
 					{(onClose) => {
 						return <>
 							<ModalHeader className="flex flex-col gap-1">
-								{unit} MileStone !
+								{config.unit} MileStone !
 							</ModalHeader>
 							<ModalBody>
 								<div className="leading-6">
@@ -624,7 +626,7 @@ function Play() {
 																					color={isReached ? 'primary' : 'default'}
 																					className="mr-0 ml-4 text-sm leading-5 text-right whitespace-nowrap"
 																				>
-																					{numberWithCommas(item.count)} {unit}
+																					{numberWithCommas(item.count)} {config.unit}
 																				</Chip>
 																			</div>
 																		</div>
