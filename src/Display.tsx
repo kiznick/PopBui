@@ -1,30 +1,29 @@
 import { ScrollShadow, Progress } from '@nextui-org/react'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
+import config from './config'
 
 type LeaderboardType = {
     username: string
-    buiCount: number
+    count: number
 }
 
 type MileStoneType = {
-    buiCount: number
+    count: number
     message: string
 }
 
 function Display() {
-    const apiServer = 'https://popbui-api.kiznick.me/'
-
     const medalEmoji: { [key: number]: string } = {
         1: '🥇',
         2: '🥈',
         3: '🥉',
     }
 
-    const [isBui, setIsBui] = useState(false)
+    const [isPop, setIsPop] = useState(false)
     const [totalLeaderboard, setTotalLeaderboard] = useState<LeaderboardType[]>([])
     const [highestLeaderboard, setHighestLeaderboard] = useState<LeaderboardType[]>([])
-    const [totalBui, setTotalBui] = useState(0)
+    const [totalPop, setTotalPop] = useState(0)
 	const [mileStone, setMileStone] = useState<MileStoneType[]>([])
     const [currentMileStone, setCurrentMileStone] = useState<MileStoneType | null>(null)
 
@@ -34,7 +33,7 @@ function Display() {
 
     useEffect(() => {
         const updateLeaderboard = async () => {
-            const response = await axios.get(`${apiServer}leaderboard`)
+            const response = await axios.get(`${config.apiServer}leaderboard`)
 
             if (response.data.error) {
                 return alert(response.data.message)
@@ -44,7 +43,7 @@ function Display() {
 
             setTotalLeaderboard(leaderboard.totalRanking)
             setHighestLeaderboard(leaderboard.highestRanking)
-            setTotalBui(leaderboard.totalBui)
+            setTotalPop(leaderboard.totalPop)
         }
 
         updateLeaderboard()
@@ -55,7 +54,7 @@ function Display() {
 
     useEffect(() => {
         const updateMilestone = async () => {
-            const response = await axios.get(`${apiServer}milestone`)
+            const response = await axios.get(`${config.apiServer}milestone`)
 
             if (response.data.error) {
                 return alert(response.data.message)
@@ -73,20 +72,20 @@ function Display() {
     useEffect(() => {
         if (!mileStone) return
 
-        const currentMileStone = mileStone.find((item: MileStoneType) => totalBui < item.buiCount) || null
+        const currentMileStone = mileStone.find((item: MileStoneType) => totalPop < item.count) || null
         setCurrentMileStone(currentMileStone)
-    }, [totalBui, mileStone])
+    }, [totalPop, mileStone])
 
     useEffect(() => {
-        const randomIsBui = async () => {
-            setIsBui(Math.random() < 0.5)
+        const randomIsPop = async () => {
+            setIsPop(Math.random() < 0.5)
 
             setTimeout(() => {
-                randomIsBui()
+                randomIsPop()
             }, 1000 * Math.random())
         }
 
-        randomIsBui()
+        randomIsPop()
     }, [])
 
     return (
@@ -94,7 +93,7 @@ function Display() {
             <div
                 className='container mx-auto flex flex-col justify-between'
                 style={{
-                    backgroundImage: `url('${isBui ? '/2.png' : '/1.png'}')`,
+                    backgroundImage: `url('${isPop ? '/2.png' : '/1.png'}')`,
                     backgroundSize: 'contain',
                     backgroundRepeat: 'no-repeat',
                     backgroundPosition: 'center',
@@ -107,7 +106,7 @@ function Display() {
                         <p
                             className="text-7xl lg:text-8xl"
                         >
-                            PopBui
+                            Pop{config.unit}
                         </p>
                         <p>
                             Leaderbboard
@@ -127,7 +126,7 @@ function Display() {
                                             <p
                                                 className="text-xl"
                                             >
-                                                Total Bui of All Time
+                                                Total {config.unit} of All Time
                                             </p>
                                             {
                                                 totalLeaderboard ? totalLeaderboard.map((item, index) => (
@@ -136,7 +135,7 @@ function Display() {
                                                         className="flex justify-between"
                                                     >
                                                         <span>{medalEmoji[index + 1] || `${index + 1}.`} {item.username}</span>
-                                                        <span>{numberWithCommas(item.buiCount)} Bui</span>
+                                                        <span>{numberWithCommas(item.count)} {config.unit}</span>
                                                     </p>
                                                 )) : 'Loading...'
                                             }
@@ -157,7 +156,7 @@ function Display() {
                                             <p
                                                 className="text-xl"
                                             >
-                                                Highest Bui in 5 seconds
+                                                Highest {config.unit} in {config.second} seconds
                                             </p>
                                             {
                                                 highestLeaderboard ?
@@ -167,7 +166,7 @@ function Display() {
                                                             className="flex justify-between"
                                                         >
                                                             <span>{medalEmoji[index + 1] || `${index + 1}.`} {item.username}</span>
-                                                            <span>{numberWithCommas(item.buiCount)} Bui</span>
+                                                            <span>{numberWithCommas(item.count)} {config.unit}</span>
                                                         </p>
                                                     )) : 'Loading...'
                                             }
@@ -181,17 +180,17 @@ function Display() {
 								<>
 									<Progress
                                         className="mt-2 w-[60vw] mx-auto"
-										label={`${currentMileStone.message} if everyone reaches ${numberWithCommas(currentMileStone.buiCount)} Bui. (${numberWithCommas(totalBui)}/${numberWithCommas(currentMileStone.buiCount)} Bui)`}
-										value={totalBui}
-										maxValue={currentMileStone.buiCount}
-										color={totalBui >= currentMileStone.buiCount ? 'success' : 'primary'}
+										label={`${currentMileStone.message} if everyone reaches ${numberWithCommas(currentMileStone.count)} ${config.unit}. (${numberWithCommas(totalPop)}/${numberWithCommas(currentMileStone.count)} ${config.unit})`}
+										value={totalPop}
+										maxValue={currentMileStone.count}
+										color={totalPop >= currentMileStone.count ? 'success' : 'primary'}
 									/>
 								</>
 							) : mileStone ? (
 								<>
 									<Progress
                                         className="mt-2 w-[60vw] mx-auto"
-										label={`No more MileStone ;( (${numberWithCommas(totalBui)} Bui)`}
+										label={`No more MileStone ;( (${numberWithCommas(totalPop)} ${config.unit})`}
 										value={1}
 										maxValue={1}
 										color={'success'}
@@ -206,7 +205,7 @@ function Display() {
                 <p className="mb-2 text-3xl">Scan to Play !</p>
                 <img
                     src="./QRCode.png" 
-                    alt="popbui.kiznick.me"
+                    alt="pophiw.kiznick.me"
                     className="w-64 h-64 rounded"
                 />
             </div>

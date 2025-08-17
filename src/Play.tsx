@@ -5,28 +5,24 @@ import { motion } from 'framer-motion'
 import { Howl } from 'howler'
 import { CheckCircleIcon, LinkIcon } from '@heroicons/react/24/solid'
 import { useGoogleReCaptcha } from 'react-google-recaptcha-v3'
+import config from './config'
 
 type LeaderboardType = {
 	rank: number
 	username: string
-	buiCount: number
+	count: number
 }
 
 type MileStoneType = {
-	buiCount: number
+	count: number
 	message: string
 	reward: string | null
 	rewardUrl: string | null
 }
 
+const unit = 'Hiw'
+
 function Play() {
-	const time = 5
-
-	const apiServer = 'https://popbui-api.kiznick.me/'
-	// const apiServer = 'http://localhost:3000/'
-
-	const maxClick = 500 * time
-
 	const medalEmoji: { [key: number]: string } = {
 		1: '🥇',
 		2: '🥈',
@@ -34,12 +30,12 @@ function Play() {
 	}
 
 	const usernameModal = useDisclosure()
-	const buiMilestoneModal = useDisclosure()
+	const MilestoneModal = useDisclosure()
 	const { executeRecaptcha } = useGoogleReCaptcha()
 
 	const [isClicked, setIsClicked] = useState(false)
 	const [count, setCount] = useState(0)
-	const [timeLeft, setTimeLeft] = useState(time)
+	const [timeLeft, setTimeLeft] = useState(config.second)
 	const [isRunning, setIsRunning] = useState(false)
 	const [isLockButton, setIsLockButton] = useState(false)
 	const [isOpenLeaderboard, setIsOpenLeaderboard] = useState(false)
@@ -48,7 +44,7 @@ function Play() {
 	const [inputUsername, setInputUsername] = useState('')
 	const [totalLeaderboard, setTotalLeaderboard] = useState<LeaderboardType[]>([])
 	const [highestLeaderboard, setHighestLeaderboard] = useState<LeaderboardType[]>([])
-	const [totalBui, setTotalBui] = useState(0)
+	const [totalPop, setTotalPop] = useState(0)
 	const [mileStone, setMileStone] = useState<MileStoneType[]>([])
 	const [currentMileStone, setCurrentMileStone] = useState<MileStoneType | null>(null)
 
@@ -61,13 +57,13 @@ function Play() {
 			if (!executeRecaptcha) return alert('Recaptcha not ready yet.')
 
 			if (count === 0) return
-			if (count > maxClick) return alert('You clicked too much.')
-			
+			if (count > config.second * config.maxClickPerSecond) return alert('You clicked too much.')
+
 			const token = await executeRecaptcha('kiznick')
-			const response = await axios.post(`${apiServer}kiznick`, {
+			const response = await axios.post(`${config.apiServer}kiznick`, {
 				token,
 				username,
-				buiCount: count,
+				count,
 			})
 
 			if (response.data.error) {
@@ -78,7 +74,7 @@ function Play() {
 		if (!isRunning && count > 0 && username) {
 			sendData()
 		}
-	}, [count, executeRecaptcha, isRunning, maxClick, username])
+	}, [count, executeRecaptcha, isRunning, username])
 
 	useEffect(() => {
 		let intervalId = undefined
@@ -102,7 +98,7 @@ function Play() {
 	useEffect(() => {
 		const updateLeaderboard = async () => {
 			try {
-				const response = await axios.get(`${apiServer}leaderboard`)
+				const response = await axios.get(`${config.apiServer}leaderboard`)
 				if (response.data.error) {
 					return alert(response.data.message)
 				}
@@ -110,7 +106,7 @@ function Play() {
 
 				setTotalLeaderboard(leaderboard.totalRanking)
 				setHighestLeaderboard(leaderboard.highestRanking)
-				setTotalBui(leaderboard.totalBui)
+				setTotalPop(leaderboard.totalPop)
 			} catch (error) {
 				console.error('Error updating leaderboard:', error)
 			}
@@ -128,7 +124,7 @@ function Play() {
 
 	useEffect(() => {
 		const updateMilestone = async () => {
-			const response = await axios.get(`${apiServer}milestone`)
+			const response = await axios.get(`${config.apiServer}milestone`)
 
 			if (response.data.error) {
 				return alert(response.data.message)
@@ -150,9 +146,9 @@ function Play() {
 	useEffect(() => {
 		if (!mileStone) return
 
-		const currentMileStone = mileStone.find((item: MileStoneType) => totalBui < item.buiCount) || null
+		const currentMileStone = mileStone.find((item: MileStoneType) => totalPop < item.count) || null
 		setCurrentMileStone(currentMileStone)
-	}, [totalBui, mileStone])
+	}, [totalPop, mileStone])
 
 	useEffect(() => {
 		const localUsername = localStorage.getItem('k-username')?.toLowerCase()
@@ -213,7 +209,7 @@ function Play() {
 		}
 
 		setCount(0)
-		setTimeLeft(time)
+		setTimeLeft(config.second)
 		setIsRunning(true)
 		setIsLockButton(true)
 		setIsOpenLeaderboard(false)
@@ -237,15 +233,15 @@ function Play() {
 						<p
 							className="text-7xl lg:text-8xl"
 						>
-							PopBui
+							Pop{unit}
 						</p>
 						<p>
-							Click as much as you can in {time} seconds.
+							Click as much as you can in {config.second} seconds.
 						</p>
 						<p
 							className='text-4xl lg:text-5xl'
 						>
-							<span className="font-bold">{timeLeft}</span>s | <span className="font-bold">{count}</span> Bui
+							<span className="font-bold">{timeLeft}</span>s | <span className="font-bold">{count}</span> {unit}
 						</p>
 						<p
 							className='text-xl flex items-center justify-center gap-2 mt-5'
@@ -305,14 +301,14 @@ function Play() {
 							currentMileStone ? (
 								<>
 									<Progress
-										label={`${currentMileStone.message} if everyone reaches ${numberWithCommas(currentMileStone.buiCount)} Bui. (${numberWithCommas(totalBui)}/${numberWithCommas(currentMileStone.buiCount)} Bui)`}
-										value={totalBui}
-										maxValue={currentMileStone.buiCount}
-										color={totalBui >= currentMileStone.buiCount ? 'success' : 'primary'}
+										label={`${currentMileStone.message} if everyone reaches ${numberWithCommas(currentMileStone.count)} ${unit}. (${numberWithCommas(totalPop)}/${numberWithCommas(currentMileStone.count)} ${unit})`}
+										value={totalPop}
+										maxValue={currentMileStone.count}
+										color={totalPop >= currentMileStone.count ? 'success' : 'primary'}
 										onClick={() => {
 											if (isRunning) return
 
-											buiMilestoneModal.onOpen()
+											MilestoneModal.onOpen()
 										}}
 									/>
 									<p
@@ -323,7 +319,7 @@ function Play() {
 										onClick={() => {
 											if (isRunning) return
 
-											buiMilestoneModal.onOpen()
+											MilestoneModal.onOpen()
 										}}
 									>
 										Click here to view more MileStone !
@@ -332,14 +328,14 @@ function Play() {
 							) : mileStone ? (
 								<>
 									<Progress
-										label={`No more MileStone ;( (${numberWithCommas(totalBui)} Bui)`}
+										label={`No more MileStone ;( (${numberWithCommas(totalPop)} ${unit})`}
 										value={1}
 										maxValue={1}
 										color={'success'}
 										onClick={() => {
 											if (isRunning) return
 
-											buiMilestoneModal.onOpen()
+											MilestoneModal.onOpen()
 										}}
 									/>
 									<p
@@ -350,7 +346,7 @@ function Play() {
 										onClick={() => {
 											if (isRunning) return
 
-											buiMilestoneModal.onOpen()
+											MilestoneModal.onOpen()
 										}}
 									>
 										Click here to view past MileStone !
@@ -426,7 +422,7 @@ function Play() {
 									<p
 										className="text-xl"
 									>
-										Total Bui of All Time
+										Total {unit} of All Time
 									</p>
 									{
 										totalLeaderboard ? totalLeaderboard.map((item, index) => (
@@ -435,7 +431,7 @@ function Play() {
 												className="flex justify-between"
 											>
 												<span>{medalEmoji[index + 1] || `${index + 1}.`} {item.username}</span>
-												<span>{numberWithCommas(item.buiCount)} Bui</span>
+												<span>{numberWithCommas(item.count)} {unit}</span>
 											</p>
 										)) : 'Loading...'
 									}
@@ -446,7 +442,7 @@ function Play() {
 									<p
 										className="text-xl"
 									>
-										Highest Bui in {time} seconds
+										Highest {unit} in {config.second} seconds
 									</p>
 									{
 										highestLeaderboard ?
@@ -456,7 +452,7 @@ function Play() {
 													className="flex justify-between"
 												>
 													<span>{medalEmoji[index + 1] || `${index + 1}.`} {item.username}</span>
-													<span>{numberWithCommas(item.buiCount)} Bui</span>
+													<span>{numberWithCommas(item.count)} {unit}</span>
 												</p>
 											)) : 'Loading...'
 									}
@@ -526,8 +522,8 @@ function Play() {
 			</Modal>
 
 			<Modal
-				isOpen={buiMilestoneModal.isOpen}
-				onOpenChange={buiMilestoneModal.onOpenChange}
+				isOpen={MilestoneModal.isOpen}
+				onOpenChange={MilestoneModal.onOpenChange}
 				placement='center'
 				scrollBehavior='outside'
 				className="touch-manipulation select-none"
@@ -536,7 +532,7 @@ function Play() {
 					{(onClose) => {
 						return <>
 							<ModalHeader className="flex flex-col gap-1">
-								Bui MileStone !
+								{unit} MileStone !
 							</ModalHeader>
 							<ModalBody>
 								<div className="leading-6">
@@ -548,10 +544,13 @@ function Play() {
 												{
 													mileStone ?
 														mileStone.map((item, index) => {
-															const isReached = totalBui >= item.buiCount
+															const isReached = totalPop >= item.count
 															const No = index + 1
 															return (
-																<li className="text-left">
+																<li
+																	key={index}
+																	className="text-left"
+																>
 																	<div
 																		className="relative pb-8"
 																	>
@@ -625,7 +624,7 @@ function Play() {
 																					color={isReached ? 'primary' : 'default'}
 																					className="mr-0 ml-4 text-sm leading-5 text-right whitespace-nowrap"
 																				>
-																					{numberWithCommas(item.buiCount)} Bui
+																					{numberWithCommas(item.count)} {unit}
 																				</Chip>
 																			</div>
 																		</div>
