@@ -2,14 +2,13 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
-import ReactGA from 'react-ga'
 import { NextUIProvider, ScrollShadow } from '@nextui-org/react'
 import { GoogleReCaptchaProvider } from 'react-google-recaptcha-v3'
 import { Icon } from '@iconify/react'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 const RECAPTCHA_SITE_KEY = '6LfmTv8pAAAAAHD64gDfaGs7_XTch3-EP_L04z03'
-
-ReactGA.initialize('G-TJ93D2EK2Z')
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
@@ -31,6 +30,15 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                                 className="lg:w-1/6 w-1/2 mt-1"
                             /> */}
                         </div>
+                        {/* <div
+                            className="flex justify-start items-center"
+                        >
+                            <img
+                                src="./logo/muic.png"
+                                alt="Mahidol University International College"
+                                className="lg:w-2/3"
+                            />
+                        </div> */}
                         <div
                             className="flex justify-end"
                         >
@@ -53,5 +61,17 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                 </GoogleReCaptchaProvider>
             </ScrollShadow>
         </NextUIProvider>
+        <ToastContainer
+            closeOnClick
+            draggable
+            newestOnTop
+            pauseOnFocusLoss
+            pauseOnHover
+            autoClose={5000}
+            hideProgressBar={false}
+            position='bottom-right'
+            rtl={false}
+            theme="light"
+        />
     </React.StrictMode>,
 )

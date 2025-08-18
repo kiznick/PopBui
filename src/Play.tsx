@@ -6,6 +6,10 @@ import { Howl } from 'howler'
 import { CheckCircleIcon, LinkIcon } from '@heroicons/react/24/solid'
 import { useGoogleReCaptcha } from 'react-google-recaptcha-v3'
 import config from './config'
+import { toast } from 'react-toastify'
+import plausible from './lib/plausible'
+
+plausible.enableAutoPageviews()
 
 type LeaderboardType = {
 	rank: number
@@ -56,21 +60,34 @@ function Play() {
 
 	useEffect(() => {
 		const sendData = async () => {
-			if (!executeRecaptcha) return alert('Recaptcha not ready yet.')
+			if (!executeRecaptcha) {
+				plausible.trackEvent('recaptcha_not_ready')
+				return toast.error('Recaptcha not ready yet.')
+			}
 
 			if (count === 0) return
-			if (count > config.second * config.maxClickPerSecond) return alert('You clicked too much.')
+			if (count > config.second * config.maxClickPerSecond) {
+				plausible.trackEvent('click_too_much')
+				return toast.error('You clicked too much!')
+			}
 
 			const token = await executeRecaptcha('kiznick')
-			const response = await axios.post(`${config.apiServer}kiznick`, {
+
+			return await axios.post(`${config.apiServer}kiznick`, {
 				token,
 				username,
 				count,
-			})
+			}).catch((e) => {
+				const data = e.response.data
+				console.error('Error sending data:', e)
+				toast.error(data.code)
 
-			if (response.data.error) {
-				alert(response.data.message)
-			}
+				plausible.trackEvent('server_error', {
+					props: {
+						error: data.code
+					}
+				})
+			})
 		}
 
 		if (!isRunning && count > 0 && username) {
@@ -99,19 +116,23 @@ function Play() {
 
 	useEffect(() => {
 		const updateLeaderboard = async () => {
-			try {
-				const response = await axios.get(`${config.apiServer}leaderboard`)
-				if (response.data.error) {
-					return alert(response.data.message)
-				}
+			return await axios.get(`${config.apiServer}leaderboard`).then((response) => {
 				const leaderboard = response.data
 
 				setTotalLeaderboard(leaderboard.totalRanking)
 				setHighestLeaderboard(leaderboard.highestRanking)
 				setTotalPop(leaderboard.totalPop)
-			} catch (error) {
-				console.error('Error updating leaderboard:', error)
-			}
+			}).catch((e) => {
+				const data = e.response.data
+				console.error('Error fetching leaderboard:', e)
+				toast.error(data.code)
+
+				plausible.trackEvent('leaderboard_error', {
+					props: {
+						error: data.code
+					}
+				})
+			})
 		}
 
 		updateLeaderboard()
@@ -126,13 +147,19 @@ function Play() {
 
 	useEffect(() => {
 		const updateMilestone = async () => {
-			const response = await axios.get(`${config.apiServer}milestone`)
+			return await axios.get(`${config.apiServer}milestone`).then((response) => {
+				setMileStone(response.data)
+			}).catch((e) => {
+				const data = e.response.data
+				console.error('Error fetching milestone:', e)
+				toast.error(data.code)
 
-			if (response.data.error) {
-				return alert(response.data.message)
-			}
-
-			setMileStone(response.data)
+				plausible.trackEvent('milestone_error', {
+					props: {
+						error: data.code
+					}
+				})
+			})
 		}
 
 		updateMilestone()
