@@ -201,6 +201,14 @@ function Display() {
                     </div>
                 </div>
             </div>
+            <div className="fixed bottom-8 left-8 text-center">
+                <p className="mb-2 text-3xl">Scan to Play !</p>
+                <img
+                    src="./QRCode.png" 
+                    alt="pophiw.kiznick.me"
+                    className="w-64 h-64 rounded"
+                />
+            </div>
             <div className="fixed bottom-8 right-8 text-center">
                 <p className="mb-2 text-3xl">Scan to Play !</p>
                 <img
